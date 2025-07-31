@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kitob narxi kalkulyatori</title>
+  <style>
+    :root {
+      --primary-color: #007acc;
+      --hover-color: #005f99;
+      --font-color: white;
+      --shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f8fb;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      font-size: 26px;
+    }
+
+    label {
+      font-weight: 600;
+      color: #333;
+      display: block;
+      margin-top: 10px;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      font-size: 15px;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .row > div {
+      flex: 1 1 48%;
+    }
+
+    button {
+  margin-top: 10px;
+      padding: 12px;
+      width: 100%;
+      font-weight: bold;
+      background-color: var(--primary-color);
+      color: var(--font-color);
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      background-color: var(--hover-color);
+      transform: scale(1.02);
+    }
+
+    #natija, #izoh, #qogoz {
+  transition: all 0.5s ease-in-out;
+      margin-top: 15px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    #izoh {
+      font-style: italic;
+      color: #777;
+    }
+
+    .banner {
+      background: linear-gradient(90deg, #007acc, #00c6ff);
+      color: white;
+      text-align: center;
+      padding: 25px 10px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      box-shadow: var(--shadow);
+    }
+
+    .banner-text span {
+      display: block;
+      font-size: 30px;
+      font-weight: bold;
+      animation: slide-in 3s infinite alternate;
+    }
+
+    .banner-text .sub {
+      font-size: 18px;
+      font-style: italic;
+    }
+
+    @keyframes slide-in {
+      from { transform: translateX(-30%); opacity: 0.2; }
+      to { transform: translateX(30%); opacity: 1; }
+    }
+
+    .contact-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .contact-banner {
+      display: flex;
+      align-items: center;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: bold;
+      text-decoration: none;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+
+    .contact-banner img {
+      margin-right: 6px;
+      height: 18px;
+    }
+
+    .contact-banner:hover {
+      background-color: var(--hover-color);
+      transform: scale(1.05);
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    footer .brand {
+      font-size: 22px;
+      font-weight: bold;
+      color: #000;
+    }
+
+    @media (max-width: 600px) {
+      .row > div {
+        flex: 1 1 100%;
+      }
+    }
+  @keyframes pulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.9; }
+}
+
+/* Modal Styles */
+.select-button {
+  background: white; color: #333;
+  border: 1px solid #ccc;
+  width: 100%; text-align: left;
+}
+.modal {
+  display: none; position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  justify-content: center; align-items: center;
+  z-index: 999;
+}
+.modal-content {
+  background: white; padding: 20px; border-radius: 12px;
+  animation: fadeInUp 0.3s ease; width: 80%; max-width: 300px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+.modal-content button {
+  display: block; width: 100%; margin-top: 10px;
+  background: #007acc; color: white;
+  border: none; font-weight: bold;
+  cursor: pointer; transition: 0.2s ease;
+}
+.modal-content button:hover {
+  background: #005f99; transform: scale(1.03);
+}
+@keyframes fadeInUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+
+body { opacity: 1; transition: none; }
+body.loaded { opacity: 1; }
+.select-button:hover {
+  background-color: #eef6fc;
+  transform: scale(1.02);
+}
+
+</style>
+</head>
+<body onload="document.body.classList.add('loaded')">
+  <div class="banner">
+    <div class="banner-text">
+      <span>FbookMED</span>
+      <span class="sub">najot-ilmda</span>
+    </div>
+  </div>
+
+  <h2>KITOB NARXI KALKULATORI</h2>
+
+  <label for="tarif">Tarif:</label>
+  <button class='select-button' id='tarifBtn' onclick="showModal('tarif')">Tanlang</button>
+  <select id='tarif' style='display:none;' onchange='korsatmaChiqar()'>
+    <option value="" disabled selected>Tanlang</option>
+    <option>Standart</option>
+    <option>Optom</option>
+    <option>Maxsus</option>
+  </select>
+
+  <div id="izoh"></div>
+
+  <div class="row">
+    <div>
+      <label for="format">Format:</label>
+  <button class='select-button' id='formatBtn' onclick="showModal('format')">Tanlang</button>
+  <select id='format' style='display:none;'>
+        <option value="" disabled selected>Tanlang</option>
+        <option>A4</option>
+        <option>A5</option>
+        <option>B5</option>
+      </select>
+    </div>
+    <div>
+      <label for="muqova">Muqova:</label>
+  <button class='select-button' id='muqovaBtn' onclick="showModal('muqova')">Tanlang</button>
+  <select id='muqova' style='display:none;'>
+        <option value="" disabled selected>Tanlang</option>
+        <option>Qattiq muqovali</option>
+        <option>Yumshoq muqovali</option>
+        <option>Oddiy muqovali</option>
+        <option>Muqovasiz</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row">
+    <div>
+      <label for="rang">Rang:</label>
+  <button class='select-button' id='rangBtn' onclick="showModal('rang')">Tanlang</button>
+  <select id='rang' style='display:none;'>
+        <option value="" disabled selected>Tanlang</option>
+        <option>Oq qora</option>
+        <option>Rangli</option>
+      </select>
+    </div>
+    <div>
+      <label for="sahifa">Sahifa soni:</label>
+      <input type="number" id="sahifa" placeholder="Sahifa soni">
+    </div>
+  </div>
+
+  <div id="qogoz"></div>
+  <button onclick="hisoblaNarx()">Hisoblash</button>
+  <div id="natija"></div>
+
+  <footer>
+    <div class="brand">FbookMED</div>
+    <div class="contact-row">
+      <a href="tel:+998900152260" class="contact-banner">📞 +998900152260</a>
+      <a href="https://t.me/FbookMED" class="contact-banner" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg">FbookMED
+      </a>
+      <a href="https://t.me/FbookMED1" class="contact-banner" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg">Admin
+      </a>
+      <a href="https://youtube.com/@fbookmed?feature=shared" class="contact-banner" target="_blank">
+        <img src="https://repository-images.githubusercontent.com/324520492/ed8c1c80-47b4-11eb-8ddc-9b4ca1c3543d">YouTube
+      </a>
+
+      <a href="https://uzum.uz/ru/shop/fbookmed" class="contact-banner" target="_blank">
+        <img src="https://play-lh.googleusercontent.com/rHQT7QaBJoQJeE9Ela8HKB_E2geP4IZ-JLvfdnE87ycnaBIZjeyVhRAr6XUz6xf1FMlV">Uzum Market
+      </a>
+    </div>
+  </footer>
+
+  <script>
+    const tarifNarxlar = {
+      "Standart": {
+        "A4": { "Oq qora": 180, "Rangli": 220, muqova: {"Qattiq muqovali": 40000, "Yumshoq muqovali": 20000, "Oddiy muqovali": 5000, "Muqovasiz": 0} },
+        "A5": { "Oq qora": 90,  "Rangli": 110, muqova: {"Qattiq muqovali": 20000, "Yumshoq muqovali": 10000, "Oddiy muqovali": 2000, "Muqovasiz": 0} },
+        "B5": { "Oq qora": 180, "Rangli": 220, muqova: {"Qattiq muqovali": 40000, "Yumshoq muqovali": 20000, "Oddiy muqovali": 3000, "Muqovasiz": 0} },
+      },
+      "Optom": {
+        "A4": { "Oq qora": 120, "Rangli": 120, muqova: {"Qattiq muqovali": 40000, "Yumshoq muqovali": 15000, "Oddiy muqovali": 2000, "Muqovasiz": 0} },
+        "A5": { "Oq qora": 60,  "Rangli": 60,  muqova: {"Qattiq muqovali": 20000, "Yumshoq muqovali": 10000, "Oddiy muqovali": 1000, "Muqovasiz": 0} },
+        "B5": { "Oq qora": 120, "Rangli": 1120, muqova: {"Qattiq muqovali": 40000, "Yumshoq muqovali": 15000, "Oddiy muqovali": 2000, "Muqovasiz": 0} },
+      },
+      "Maxsus": {
+        "A4": { "Oq qora": 150, "Rangli": 150, muqova: {"Qattiq muqovali": 40000, "Yumshoq muqovali": 20000, "Oddiy muqovali": 5000, "Muqovasiz": 0} },
+        "A5": { "Oq qora": 75,  "Rangli": 75,  muqova: {"Qattiq muqovali": 20000, "Yumshoq muqovali": 10000, "Oddiy muqovali": 2000, "Muqovasiz": 0} },
+        "B5": { "Oq qora": 150, "Rangli": 150, muqova: {"Qattiq muqovali": 40000, "Yumshoq muqovali": 20000, "Oddiy muqovali": 3000, "Muqovasiz": 0} },
+      }
+    };
+
+    function korsatmaChiqar() {
+      const tarif = document.getElementById('tarif').value;
+      const izoh = document.getElementById('izoh');
+      if (tarif === "Optom") {
+        izoh.innerText = "💡 Minimal buyurtma 100 ta";
+      } else if (tarif === "Maxsus") {
+        izoh.innerText = "💼 Sotuvchilar uchun maxsus";
+      } else if (tarif === "Standart") {
+        izoh.innerText = "📚 Kam sonli buyurtma (donalik kitob)";
+      } else {
+        izoh.innerText = "";
+      }
+    }
+
+    function hisoblaNarx() {
+      const tarif = document.getElementById('tarif').value;
+      const format = document.getElementById('format').value;
+      const muqova = document.getElementById('muqova').value;
+      const rang = document.getElementById('rang').value;
+      const sahifa = parseInt(document.getElementById('sahifa').value);
+
+      const qogozInfo = document.getElementById('qogoz');
+
+      if (!tarif || !format || !muqova || !rang || isNaN(sahifa)) {
+        document.getElementById('natija').innerText = "Iltimos, barcha maydonlarni to‘ldiring!";
+        return;
+      }
+
+      const sahifaNarxi = tarifNarxlar[tarif][format][rang];
+      const muqovaNarxi = tarifNarxlar[tarif][format].muqova[muqova];
+      const jami = sahifa * sahifaNarxi + muqovaNarxi;
+
+      
+      const natijaElem = document.getElementById('natija');
+      natijaElem.innerText = `Umumiy narx: ${jami.toLocaleString()} so'm`;
+      natijaElem.style.animation = 'none';
+      void natijaElem.offsetWidth; // Trigger reflow
+
+['tarifBtn','formatBtn','muqovaBtn','rangBtn'].forEach(id => {
+  const btn = document.getElementById(id);
+  if (btn) {
+    btn.style.cursor = 'pointer';
+    btn.addEventListener('click', () => {
+      const type = id.replace('Btn', '');
+      document.getElementById(type + 'Modal').style.display = 'flex';
+    });
+  }
+});
+
+      natijaElem.style.animation = 'pulse 0.6s ease-in-out';
+    
+
+      // sahifa ogohlantirish
+      if (sahifa > 800) {
+        qogozInfo.innerText = "⚠️ Diqqat! Sahifa soni 800 tadan oshib ketdi.";
+      } else {
+        qogozInfo.innerText = "";
+      }
+
+      // formatga mos o'lcham
+      if (format === "A4") {
+        qogozInfo.innerText += " Qog'oz o'lchami – 210x297 mm";
+      } else if (format === "A5") {
+        qogozInfo.innerText += " Qog'oz o'lchami – 148x210 mm";
+      } else if (format === "B5") {
+        qogozInfo.innerText += " Qog'oz o'lchami – 176x250 mm";
+      }
+    }
+
+    window.onload = function() {
+  korsatmaChiqar();
+  setTimeout(() => document.body.classList.add('loaded'), 100);
+
+ };
+  
+function showModal(type) {
+  document.getElementById(type + 'Modal').style.display = 'flex';
+}
+function selectOption(type, value) {
+  document.getElementById(type).value = value;
+  document.getElementById(type + 'Btn').innerText = value;
+  document.getElementById(type + 'Modal').style.display = 'none';
+  if (type === 'tarif') korsatmaChiqar();
+}
+window.onclick = function(event) {
+  ['tarif','format','muqova','rang'].forEach(type => {
+    const modal = document.getElementById(type + 'Modal');
+    if (event.target === modal) {
+      modal.style.display = 'none';
+    }
+  });
+}
+
+</script>
+
+<!-- Modal Dialogs -->
+<div id="tarifModal" class="modal"><div class="modal-content">
+  <button onclick="selectOption('tarif','Standart')">Standart</button>
+  <button onclick="selectOption('tarif','Optom')">Optom</button>
+  <button onclick="selectOption('tarif','Maxsus')">Maxsus</button>
+</div></div>
+<div id="formatModal" class="modal"><div class="modal-content">
+  <button onclick="selectOption('format','A4')">A4</button>
+  <button onclick="selectOption('format','A5')">A5</button>
+  <button onclick="selectOption('format','B5')">B5</button>
+</div></div>
+<div id="muqovaModal" class="modal"><div class="modal-content">
+  <button onclick="selectOption('muqova','Qattiq muqovali')">Qattiq muqovali</button>
+  <button onclick="selectOption('muqova','Yumshoq muqovali')">Yumshoq muqovali</button>
+  <button onclick="selectOption('muqova','Oddiy muqovali')">Oddiy muqovali</button>
+  <button onclick="selectOption('muqova','Muqovasiz')">Muqovasiz</button>
+</div></div>
+<div id="rangModal" class="modal"><div class="modal-content">
+  <button onclick="selectOption('rang','Oq qora')">Oq qora</button>
+  <button onclick="selectOption('rang','Rangli')">Rangli</button>
+</div></div>
+
+</body>
+</html>
