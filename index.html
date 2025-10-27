@@ -1,546 +1,446 @@
 <!DOCTYPE html>
-
 <html lang="uz">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Kitob narxi kalkulyatori</title>
-<style>
-    :root {
-      --primary-color: #007acc;
-      --hover-color: #005f99;
-      --font-color: white;
-      --shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f4f8fb;
-      padding: 20px;
-      max-width: 600px;
-      margin: auto;
-    }
-
-    h2 {
-      text-align: center;
-      color: #333;
-      font-size: 26px;
-    }
-
-    label {
-      font-weight: 600;
-      color: #333;
-      display: block;
-      margin-top: 10px;
-    }
-
-    select, input {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      box-shadow: var(--shadow);
-      font-size: 15px;
-    }
-
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .row > div {
-      flex: 1 1 48%;
-    }
-
-    button {
-  margin-top: 10px;
-      padding: 12px;
-      width: 100%;
-      font-weight: bold;
-      background-color: var(--primary-color);
-      color: var(--font-color);
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      box-shadow: var(--shadow);
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-
-    button:hover {
-      background-color: var(--hover-color);
-      transform: scale(1.02);
-    }
-
-    #natija, #izoh, #qogoz {
-  transition: all 0.5s ease-in-out;
-      margin-top: 15px;
-      font-size: 16px;
-      font-weight: bold;
-      color: #333;
-    }
-
-    #izoh {
-      font-style: italic;
-      color: #777;
-    }
-
-    .banner {
-      background: linear-gradient(90deg, #007acc, #00c6ff);
-      color: white;
-      text-align: center;
-      padding: 25px 10px;
-      border-radius: 12px;
-      margin-bottom: 25px;
-      box-shadow: var(--shadow);
-    }
-
-    .banner-text span {
-      display: block;
-      font-size: 30px;
-      font-weight: bold;
-      animation: slide-in 3s infinite alternate;
-    }
-
-    .banner-text .sub {
-      font-size: 18px;
-      font-style: italic;
-    }
-
-    @keyframes slide-in {
-      from { transform: translateX(-30%); opacity: 0.2; }
-      to { transform: translateX(30%); opacity: 1; }
-    }
-
-    .contact-row {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
-
-    .contact-banner {
-      display: flex;
-      align-items: center;
-      background-color: var(--primary-color);
-      color: white;
-      padding: 10px 16px;
-      border-radius: 10px;
-      font-weight: bold;
-      text-decoration: none;
-      transition: transform 0.3s ease, background-color 0.3s ease;
-    }
-
-    .contact-banner img {
-      margin-right: 6px;
-      height: 18px;
-    }
-
-    .contact-banner:hover {
-      background-color: var(--hover-color);
-      transform: scale(1.05);
-    }
-
-    footer {
-      margin-top: 40px;
-      text-align: center;
-    }
-
-    footer .brand {
-      font-size: 22px;
-      font-weight: bold;
-      color: #000;
-    }
-
-    @media (max-width: 600px) {
-      .row > div {
-        flex: 1 1 100%;
-      }
-    }
-  @keyframes pulse {
-  0% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.1); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.9; }
-}
-
-/* Modal Styles */
-.select-button {
-  background: white; color: #333;
-  border: 1px solid #ccc;
-  width: 100%; text-align: left;
-}
-.modal {
-  display: none; position: fixed; top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.4);
-  justify-content: center; align-items: center;
-  z-index: 999;
-}
-.modal-content {
-  background: white; padding: 20px; border-radius: 12px;
-  animation: fadeInUp 0.3s ease; width: 80%; max-width: 300px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-}
-.modal-content button {
-  display: block; width: 100%; margin-top: 10px;
-  background: #007acc; color: white;
-  border: none; font-weight: bold;
-  cursor: pointer; transition: 0.2s ease;
-}
-.modal-content button:hover {
-  background: #005f99; transform: scale(1.03);
-}
-@keyframes fadeInUp {
-  from { transform: translateY(30px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-
-body { opacity: 1; transition: none; }
-body.loaded { opacity: 1; }
-.select-button:hover {
-  background-color: #eef6fc;
-  transform: scale(1.02);
-}
-
-
-.scrolling-text {
-  margin-top: 10px;
-  font-size: 18px;
-  font-style: italic;
-  white-space: nowrap;
-  overflow: hidden;
-  animation: scroll-left 10s linear 1;
-}
-
-.scrolling-text.telegram {
-  color: #ffe600;
-}
-
-@keyframes scroll-left {
-  0% { transform: translateX(100%); opacity: 1; }
-  100% { transform: translateX(-100%); opacity: 1; }
-  0% { transform: translateX(100%); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { transform: translateX(-100%); opacity: 0; }
-}
-
-.scrolling-wrapper {
-  max-width: 100%;
-  overflow: hidden;
-  position: relative;
-  height: 32px;
-  margin-top: 10px;
-}
-
-.scrolling-text {
-  font-size: 18px;
-  font-style: italic;
-  white-space: nowrap;
-  display: inline-block;
-  animation: scroll-left 10s linear 1;
-  padding-left: 100%;
-}
-
-.scrolling-text.telegram {
-  color: #ffe600;
-}
-
-@keyframes scroll-left {
-  0% { transform: translateX(100%); opacity: 1; }
-  100% { transform: translateX(-100%); opacity: 1; }
-  0% { transform: translateX(0); opacity: 1; }
-  100% { transform: translateX(-100%); opacity: 1; }
-}
-
-.scrolling-wrapper {
-  max-width: 100%;
-  overflow: hidden;
-  position: relative;
-  height: 32px;
-  margin-top: 10px;
-}
-
-.scrolling-text {
-  font-size: 18px;
-  font-style: italic;
-  white-space: nowrap;
-  display: inline-block;
-  animation: scroll-left 10s linear 1;
-  padding-left: 100%;
-  opacity: 1;
-  transition: opacity 0.5s ease;
-}
-
-.scrolling-text.telegram {
-  color: #ffe600;
-}
-
-@keyframes scroll-left {
-  0% { transform: translateX(100%); opacity: 1; }
-  100% { transform: translateX(-100%); opacity: 1; }
-  0% { transform: translateX(0); opacity: 1; }
-  100% { transform: translateX(-100%); opacity: 1; }
-}
-
-/* Modal responsiveness */
-.modal-content {
-  max-height: 80vh;
-  overflow-y: auto;
-}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FbookMED POS</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Kutubxonalar -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <!-- App JS -->
+  <script defer src="main.js"></script>
 </head>
-<body onload="document.body.classList.add('loaded')">
-<div class="banner">
-<div class="banner-text">
-<span>FbookMED</span>
-<span class="sub">najot-ilmda</span>
-<div class="scrolling-wrapper"><div class="scrolling-text" id="scrollingText">Eng arzon va sifatli chop etish</div></div></div>
-</div>
-<h2>KITOB NARXI KALKULATORI</h2>
-<label for="tarif">Tarif:</label>
-<button aria-label="Tanlang" class="select-button" id="tarifBtn" onclick="showModal('tarif')" title="Tanlang">Tanlang</button>
-<select aria-label="Tanlov menyusi" id="tarif" onchange="korsatmaChiqar()" style="display:none;" title="Tanlov menyusi">
-<option disabled="" selected="" value="">Tanlang</option>
-<option>Standart</option>
-<option>Optom</option>
-<option>Maxsus</option>
-</select>
-<div id="izoh"></div>
-<div class="row">
-<div>
-<label for="format">Format:</label>
-<button aria-label="Tanlang" class="select-button" id="formatBtn" onclick="showModal('format')" title="Tanlang">Tanlang</button>
-<select aria-label="Tanlov menyusi" id="format" style="display:none;" title="Tanlov menyusi">
-<option disabled="" selected="" value="">Tanlang</option>
-<option>A4</option>
-<option>A5</option>
-<option>B5</option>
-</select>
-</div>
-<div>
-<label for="muqova">Muqova:</label>
-<button aria-label="Tanlang" class="select-button" id="muqovaBtn" onclick="showModal('muqova')" title="Tanlang">Tanlang</button>
-<select aria-label="Tanlov menyusi" id="muqova" style="display:none;" title="Tanlov menyusi">
-<option disabled="" selected="" value="">Tanlang</option>
-<option>Qattiq muqovali</option>
-<option>Yumshoq muqovali</option>
-<option>Oddiy muqovali</option>
-<option>Muqovasiz</option>
-</select>
-</div>
-</div>
-<div class="row">
-<div>
-<label for="rang">Rang:</label>
-<button aria-label="Tanlang" class="select-button" id="rangBtn" onclick="showModal('rang')" title="Tanlang">Tanlang</button>
-<select aria-label="Tanlov menyusi" id="rang" style="display:none;" title="Tanlov menyusi">
-<option disabled="" selected="" value="">Tanlang</option>
-<option>Oq qora</option>
-<option>Rangli</option>
-</select>
-</div>
-<div>
-<label for="sahifa">Sahifa soni:</label>
-<input id="sahifa" placeholder="Sahifa soni" type="number"/>
-</div>
-</div>
-<div id="qogoz"></div>
-<button aria-label="Hisoblash" onclick="hisoblaNarx()" title="Hisoblash">Hisoblash</button>
-<div id="natija"></div>
-<footer>
-<div class="brand">FbookMED</div>
-<div class="contact-row">
-<a class="contact-banner" href="tel:+998900152260">📞 +998900152260</a>
-<a class="contact-banner" href="https://t.me/FbookMED" target="_blank">
-<img alt="Telegram logotipi" src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg"/>FbookMED
-      </a>
-<a class="contact-banner" href="https://t.me/FbookMED1" target="_blank">
-<img alt="Telegram logotipi" src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg"/>Admin
-      </a>
-<a class="contact-banner" href="https://youtube.com/@fbookmed?feature=shared" target="_blank">
-<img alt="GitHub banner rasmi" src="https://repository-images.githubusercontent.com/324520492/ed8c1c80-47b4-11eb-8ddc-9b4ca1c3543d"/>YouTube
-      </a>
-<a class="contact-banner" href="https://uzum.uz/ru/shop/fbookmed" target="_blank">
-<img alt="Google Play ilova rasmi" src="https://play-lh.googleusercontent.com/rHQT7QaBJoQJeE9Ela8HKB_E2geP4IZ-JLvfdnE87ycnaBIZjeyVhRAr6XUz6xf1FMlV"/>Uzum Market
-      </a>
-</div>
-</footer>
-<script>
-    const tarifNarxlar = {
-      "Standart": {
-        "A4": { "Oq qora": 180, "Rangli": 220, muqova: {"Qattiq muqovali": 40000, "Yumshoq muqovali": 20000, "Oddiy muqovali": 5000, "Muqovasiz": 0} },
-        "A5": { "Oq qora": 90,  "Rangli": 110, muqova: {"Qattiq muqovali": 20000, "Yumshoq muqovali": 10000, "Oddiy muqovali": 2000, "Muqovasiz": 0} },
-        "B5": { "Oq qora": 180, "Rangli": 220, muqova: {"Qattiq muqovali": 40000, "Yumshoq muqovali": 20000, "Oddiy muqovali": 3000, "Muqovasiz": 0} },
-      },
-      "Optom": {
-        "A4": { "Oq qora": 120, "Rangli": 120, muqova: {"Qattiq muqovali": 40000, "Yumshoq muqovali": 15000, "Oddiy muqovali": 2000, "Muqovasiz": 0} },
-        "A5": { "Oq qora": 60,  "Rangli": 60,  muqova: {"Qattiq muqovali": 20000, "Yumshoq muqovali": 10000, "Oddiy muqovali": 1000, "Muqovasiz": 0} },
-        "B5": { "Oq qora": 120, "Rangli": 120, muqova: {"Qattiq muqovali": 40000, "Yumshoq muqovali": 15000, "Oddiy muqovali": 2000, "Muqovasiz": 0} },
-      },
-      "Maxsus": {
-        "A4": { "Oq qora": 150, "Rangli": 150, muqova: {"Qattiq muqovali": 40000, "Yumshoq muqovali": 20000, "Oddiy muqovali": 5000, "Muqovasiz": 0} },
-        "A5": { "Oq qora": 75,  "Rangli": 75,  muqova: {"Qattiq muqovali": 20000, "Yumshoq muqovali": 10000, "Oddiy muqovali": 2000, "Muqovasiz": 0} },
-        "B5": { "Oq qora": 150, "Rangli": 150, muqova: {"Qattiq muqovali": 40000, "Yumshoq muqovali": 20000, "Oddiy muqovali": 3000, "Muqovasiz": 0} },
-      }
-    };
+<body>
 
-    function korsatmaChiqar() {
-      const tarif = document.getElementById('tarif').value;
-      const izoh = document.getElementById('izoh');
-      if (tarif === "Optom") {
-        izoh.innerText = "💡 Minimal buyurtma 100 ta";
-      } else if (tarif === "Maxsus") {
-        izoh.innerText = "💼 Sotuvchilar uchun maxsus";
-      } else if (tarif === "Standart") {
-        izoh.innerText = "📚 Kam sonli buyurtma (donalik kitob)";
-      } else {
-        izoh.innerText = "";
-      }
-    }
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h2>FbookMED</h2>
+    <button id="btnStatus">📋 Buyurtma holati</button>
+    <button id="btnStock">📦 Ombor</button>
+    <button id="btnFinance">💼 Moliya</button>
+    <button id="btnReport">📊 Hisobot</button>
 
-    function hisoblaNarx() {
-      const tarif = document.getElementById('tarif').value;
-      const format = document.getElementById('format').value;
-      const muqova = document.getElementById('muqova').value;
-      const rang = document.getElementById('rang').value;
-      const sahifa = parseInt(document.getElementById('sahifa').value);
+    <div class="user-row">
+      <div class="name">Operator</div>
+      <button class="dots" id="btnMore">⋯</button>
+      <div class="dropdown" id="moreMenu" hidden>
+        <button class="drop-item" id="btnPriceStd">📘 Narxlar standarti</button>
+        <button class="drop-item" id="btnRawStd">📦 Xomashyo standarti</button>
+        <button class="drop-item" id="btnRcptCfg">🖨️ Chek sozlamalari</button>
+        <button class="drop-item" id="btnParam">⚙️ Parameterlar</button>
+      </div>
+    </div>
+  </aside>
 
-      const qogozInfo = document.getElementById('qogoz');
+  <!-- SCRIM (mobil) -->
+  <div class="scrim" id="scrim" hidden></div>
 
-      if (!tarif || !format || !muqova || !rang || isNaN(sahifa)) {
-        document.getElementById('natija').innerText = "Iltimos, barcha maydonlarni to‘ldiring!";
-        return;
-      }
+  <!-- MAIN -->
+  <main class="main">
+    <!-- TOPBAR (mobil) -->
+    <div class="topbar">
+      <button class="hamburger" id="btnSidebar">☰</button>
+      <div class="top-title">FbookMED POS</div>
+    </div>
 
-      const sahifaNarxi = tarifNarxlar[tarif][format][rang];
-      const muqovaNarxi = tarifNarxlar[tarif][format].muqova[muqova];
-      const jami = sahifa * sahifaNarxi + muqovaNarxi;
+    <section class="workspace">
 
-      
-      const natijaElem = document.getElementById('natija');
-      natijaElem.innerText = `Umumiy narx: ${jami.toLocaleString()} so'm`;
-      natijaElem.style.animation = 'none';
-      void natijaElem.offsetWidth; // Trigger reflow
+      <!-- SAVAT -->
+      <div class="cart">
+        <div class="checkout">
+          <div class="checkout-left">
+            <strong>Umumiy:</strong> <span id="totalSum">0</span> so‘m
+          </div>
+          <div class="checkout-right">
+            <button class="btn s" id="btnCartClear">🗑️ Tozalash</button>
+            <button class="btn" id="btnSell">💰 Sotish</button>
+            <button class="btn" id="btnFinalize">📋 Rasmiylashtirish</button>
+            <button class="btn" id="btnPrintReceipt" title="Chek">🖨️</button>
+          </div>
+        </div>
 
-['tarifBtn','formatBtn','muqovaBtn','rangBtn'].forEach(id => {
-  const btn = document.getElementById(id);
-  if (btn) {
-    btn.style.cursor = 'pointer';
-    btn.addEventListener('click', () => {
-      const type = id.replace('Btn', '');
-      document.getElementById(type + 'Modal').style.display = 'flex';
-    });
-  }
-});
+        <div class="cart-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>№</th>
+                <th>Nomi</th>
+                <th>Narxi</th>
+                <th>Miqdor</th>
+                <th>Chegirma</th>
+                <th>Summa</th>
+              </tr>
+            </thead>
+            <tbody id="cartBody"></tbody>
+          </table>
+        </div>
+      </div>
 
-      natijaElem.style.animation = 'pulse 0.6s ease-in-out';
-    
+      <!-- MODE TUGMALARI -->
+      <div class="modes">
+        <button class="tab" id="btnBookOrder">Kitob buyurtmasi</button>
+        <button class="tab" id="btnPrint">Raspechatka</button>
+        <button class="tab" id="btnCalc">Kalkulyator</button>
+      </div>
 
-      // sahifa ogohlantirish
-      if (sahifa > 800) {
-        qogozInfo.innerText = "⚠️ Diqqat! Sahifa soni 800 tadan oshib ketdi.";
-      } else {
-        qogozInfo.innerText = "";
-      }
+      <!-- QIDIRUV -->
+      <div class="search">
+        <input id="q" type="text" placeholder="Tovar nomi yoki SKU..." />
+        <button class="btn" id="btnSearch">🔍 Qidiruv</button>
+      </div>
 
-      // formatga mos o'lcham
-      if (format === "A4") {
-        qogozInfo.innerText += " Qog'oz o'lchami – 210x297 mm";
-      } else if (format === "A5") {
-        qogozInfo.innerText += " Qog'oz o'lchami – 148x210 mm";
-      } else if (format === "B5") {
-        qogozInfo.innerText += " Qog'oz o'lchami – 176x250 mm";
-      }
-    }
+      <!-- OMBOR JADVALI -->
+      <div class="inv">
+        <table class="table">
+          <thead>
+            <tr><th>SKU</th><th>Nomi</th><th>Narx</th><th>Qoldiq</th></tr>
+          </thead>
+          <tbody id="invBody"></tbody>
+        </table>
+      </div>
 
-    window.onload = function() {
-  korsatmaChiqar();
-  setTimeout(() => document.body.classList.add('loaded'), 100);
+    </section>
+  </main>
 
- };
-  
-function showModal(type) {
-  document.getElementById(type + 'Modal').style.display = 'flex';
-}
-function selectOption(type, value) {
-  document.getElementById(type).value = value;
-  document.getElementById(type + 'Btn').innerText = value;
-  document.getElementById(type + 'Modal').style.display = 'none';
-  if (type === 'tarif') korsatmaChiqar();
-}
-window.onclick = function(event) {
-  ['tarif','format','muqova','rang'].forEach(type => {
-    const modal = document.getElementById(type + 'Modal');
-    if (event.target === modal) {
-      modal.style.display = 'none';
-    }
-  });
-}
+  <!-- ====== MODALLAR ====== -->
 
-</script>
-<!-- Modal Dialogs -->
-<div class="modal" id="tarifModal"><div class="modal-content">
-<button aria-label="Standart" onclick="selectOption('tarif','Standart')" title="Standart">Standart</button>
-<button aria-label="Optom" onclick="selectOption('tarif','Optom')" title="Optom">Optom</button>
-<button aria-label="Maxsus" onclick="selectOption('tarif','Maxsus')" title="Maxsus">Maxsus</button>
-</div></div>
-<div class="modal" id="formatModal"><div class="modal-content">
-<button aria-label="A4" onclick="selectOption('format','A4')" title="A4">A4</button>
-<button aria-label="A5" onclick="selectOption('format','A5')" title="A5">A5</button>
-<button aria-label="B5" onclick="selectOption('format','B5')" title="B5">B5</button>
-</div></div>
-<div class="modal" id="muqovaModal"><div class="modal-content">
-<button aria-label="Qattiq muqovali" onclick="selectOption('muqova','Qattiq muqovali')" title="Qattiq muqovali">Qattiq muqovali</button>
-<button aria-label="Yumshoq muqovali" onclick="selectOption('muqova','Yumshoq muqovali')" title="Yumshoq muqovali">Yumshoq muqovali</button>
-<button aria-label="Oddiy muqovali" onclick="selectOption('muqova','Oddiy muqovali')" title="Oddiy muqovali">Oddiy muqovali</button>
-<button aria-label="Muqovasiz" onclick="selectOption('muqova','Muqovasiz')" title="Muqovasiz">Muqovasiz</button>
-</div></div>
-<div class="modal" id="rangModal"><div class="modal-content">
-<button aria-label="Oq qora" onclick="selectOption('rang','Oq qora')" title="Oq qora">Oq qora</button>
-<button aria-label="Rangli" onclick="selectOption('rang','Rangli')" title="Rangli">Rangli</button>
-</div></div>
-<script>
-const messages = [
-  { text: "Eng arzon va sifatli chop etish", class: "", isLink: false },
-  { text: "Telegram orqali buyurtma bering", class: "telegram", isLink: true, href: "https://t.me/FbookMED1" }
-];
+  <!-- OMBOR -->
+  <div class="modal" id="mStock">
+    <div class="box">
+      <div class="head">
+        <h3>Ombor</h3>
+        <button class="x" data-close="mStock">Yopish</button>
+      </div>
+      <div class="body">
+        <div class="tabs">
+          <button id="tabKirim" class="tabbtn active" data-stocktab="kirim">Tovar kirim</button>
+          <button id="tabList" class="tabbtn" data-stocktab="list">Bor tovarlar</button>
+          <button id="tabRaw" class="tabbtn" data-stocktab="raw">Xomashyo kirim</button>
+        </div>
 
-let msgIndex = 0;
+        <!-- Kirim -->
+        <div id="stockKirim">
+          <div class="grid">
+            <div><label>SKU</label><input id="st_sku" class="inp" placeholder="K1003"></div>
+            <div><label>Nomi</label><input id="st_name" class="inp" placeholder="Tovar nomi"></div>
+            <div><label>Narx</label><input id="st_price" type="number" class="inp" placeholder="50000" min="0"></div>
+            <div><label>Miqdor</label><input id="st_qty" type="number" class="inp" placeholder="10" min="1" value="1"></div>
+          </div>
+          <div class="row-actions">
+            <button class="btn" id="btnStockIn">Kirimni saqlash</button>
+            <button class="btn s" id="btnStockClear">Tozalash</button>
+          </div>
+          <div id="stockMsg" class="small"></div>
+        </div>
 
-function rotateScrollingText() {
-  msgIndex = (msgIndex + 1) % messages.length;
-  const current = messages[msgIndex];
-  const oldElem = document.getElementById("scrollingText");
-  const newElem = document.createElement(current.isLink ? "a" : "div");
+        <!-- Ro‘yxat -->
+        <div id="stockList" style="display:none">
+          <table class="table">
+            <thead><tr><th>SKU</th><th>Nomi</th><th>Narx</th><th>Qoldiq</th><th>Tez kirim</th></tr></thead>
+            <tbody id="stockListBody"></tbody>
+          </table>
+        </div>
 
-  newElem.id = "scrollingText";
-  newElem.className = "scrolling-text " + (current.class || "");
-  newElem.textContent = current.text;
+        <!-- Xomashyo kirim -->
+        <div id="stockRaw" style="display:none">
+          <div class="grid">
+            <div><label>Standart (xomashyo)</label><select id="raw_std_select" class="sel"></select></div>
+            <div><label>O‘lchov birligi</label><input id="raw_unit" class="inp" disabled></div>
+            <div><label>1 pachka = nechta dona?</label><input id="raw_pack" type="number" class="inp" min="1" value="500" disabled></div>
+            <div><label>Kirim miqdori</label><input id="raw_qty" type="number" class="inp" min="1" value="1"></div>
+          </div>
+          <div class="row-actions">
+            <button class="btn" id="btnRawIn">Xomashyo kirim</button>
+            <button class="btn s" id="btnRawClear">Tozalash</button>
+          </div>
+          <h4 style="margin:12px 0 6px">Xomashyo zaxirasi</h4>
+          <table class="table">
+            <thead><tr><th>Kod</th><th>Nom</th><th>Birlik</th><th>Pachka hajmi</th><th>Qoldiq</th></tr></thead>
+            <tbody id="rawListBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  if (current.isLink) {
-    newElem.href = current.href;
-    newElem.target = "_blank";
-  }
+  <!-- MOLIYA -->
+  <div class="modal" id="mFinance">
+    <div class="box">
+      <div class="head">
+        <h3>Moliya — Kassalar</h3>
+        <button class="x" data-close="mFinance">Yopish</button>
+      </div>
+      <div class="body">
+        <div class="grid">
+          <div><label>Kassa nomi</label><input id="fin_name" class="inp" placeholder="Naqd"></div>
+          <div><label>Turi</label>
+            <select id="fin_type" class="sel">
+              <option>Naqd</option><option>Uzcard</option><option>Humo</option><option>Visa</option><option>Mastercard</option><option>Boshqa</option>
+            </select>
+          </div>
+          <div><label>Boshlang‘ich qoldiq</label><input id="fin_balance" type="number" class="inp" value="0" min="0"></div>
+        </div>
+        <div class="row-actions"><button class="btn" id="btnAddRegister">+ Kassa qo‘shish</button></div>
+        <table class="table">
+          <thead><tr><th>#</th><th>Nomi</th><th>Turi</th><th>Balans</th></tr></thead>
+          <tbody id="finList"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 
-  oldElem.replaceWith(newElem);
-}
+  <!-- HISOBOT -->
+  <div class="modal" id="mReport">
+    <div class="box">
+      <div class="head">
+        <h3>Hisobot</h3>
+        <button class="x" data-close="mReport">Yopish</button>
+      </div>
+      <div class="body">
+        <div class="controls">
+          <div><label>Boshlanish</label><br><input id="dateFrom" type="date" class="inp"></div>
+          <div><label>Tugash</label><br><input id="dateTo" type="date" class="inp"></div>
+          <div><label>Kassa</label><br><select id="repRegister" class="sel"><option value="">(hammasi)</option></select></div>
+          <div><label>Mahsulot nomi</label><br><input id="repProduct" class="inp" placeholder="nom bo‘yicha filtr..."></div>
+          <button class="btn" id="btnApply">Filtrlash</button>
+          <button class="btn s" id="btnReset">Reset</button>
+          <button class="btn" id="btnCSV">CSV eksport</button>
+        </div>
+        <div class="kpi">
+          <div class="card">📅 Davr savdosi: <span id="kpiRange">0</span> so‘m</div>
+          <div class="card">🧾 Buyurtmalar soni: <span id="kpiOrders">0</span> ta</div>
+          <div class="card">💰 Joriy oy aylanma: <span id="kpiMonth">0</span> so‘m</div>
+        </div>
+        <div class="chart-wrap">
+          <div><h4>Kunlik savdo</h4><canvas id="dailyChart" height="220"></canvas></div>
+          <div><h4>Top mahsulotlar</h4><canvas id="topChart" height="220"></canvas></div>
+        </div>
+        <div style="margin-top:16px">
+          <h4>Cheklar ro‘yxati</h4>
+          <table class="table">
+            <thead><tr><th>Sana</th><th>Chek №</th><th>Mahsulotlar</th><th>Jami summa</th><th>Umumiy soni</th></tr></thead>
+            <tbody id="checksBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 
-setInterval(rotateScrollingText, 10000);
-</script><script>
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') {
-    document.querySelectorAll('.modal').forEach(modal => {
-      modal.style.display = 'none';
-    });
-  }
-});
-</script></body>
+  <!-- BUYURTMA HOLATI -->
+  <div class="modal" id="mStatus">
+    <div class="box">
+      <div class="head"><h3>Buyurtma holati</h3><button class="x" data-close="mStatus">Yopish</button></div>
+      <div class="body">
+        <div class="st-tabs" id="statusTabs">
+          <button class="st-btn active" data-st="buyurtma">Buyurtma</button>
+          <button class="st-btn" data-st="chiqazildi">Chiqazildi</button>
+          <button class="st-btn" data-st="muqovalashda">Muqovalashda</button>
+          <button class="st-btn" data-st="tayyor">Tayyor</button>
+          <button class="st-btn" data-st="yetkazishda">Yetkazishda</button>
+          <button class="st-btn" data-st="olib_ketildi">Olib ketildi</button>
+          <button class="st-btn" data-st="bekor_qilindi">Bekor qilindi</button>
+        </div>
+        <div id="statusList" class="order-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KITOB BUYURTMASI -->
+  <div class="modal" id="mOrder">
+    <div class="box">
+      <div class="head">
+        <h3>Kitob buyurtmasi</h3>
+        <button class="x" data-close="mOrder">Yopish</button>
+      </div>
+      <div class="body">
+        <div class="row-actions">
+          <button class="btn" id="btnAddRow">+ Qator</button>
+          <button class="btn" id="btnAddToCart">Savatga qo‘shish</button>
+        </div>
+        <table class="table" style="margin-top:8px">
+          <thead>
+            <tr>
+              <th>Nomi</th><th>Sahifa</th><th>Tarif</th><th>Format</th>
+              <th>Muqova</th><th>Rang</th><th>Material</th>
+              <th>Birlik</th><th>Soni</th><th>Summa</th><th>—</th>
+            </tr>
+          </thead>
+          <tbody id="orderBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- RASPECHATKA -->
+  <div class="modal" id="mPrint">
+    <div class="box">
+      <div class="head">
+        <h3>Raspechatka</h3>
+        <button class="x" data-close="mPrint">Yopish</button>
+      </div>
+      <div class="body">
+        <div class="row-actions">
+          <button class="btn" id="btnPrintAddRow">+ Qator</button>
+          <button class="btn" id="btnPrintAddToCart">Savatga qo‘shish</button>
+        </div>
+        <table class="table" style="margin-top:8px">
+          <thead>
+            <tr>
+              <th>Nomi</th><th>List</th><th>Rang</th><th>Ko‘paytirish</th>
+              <th>Material</th><th>Birlik narx</th><th>Summa</th><th>—</th>
+            </tr>
+          </thead>
+          <tbody id="printBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- NARXLAR STANDARTI (Raspechatka diapazonlari) -->
+  <div class="modal" id="mPrice">
+    <div class="box">
+      <div class="head">
+        <h3>Raspechatka narxlari</h3>
+        <button class="x" data-close="mPrice">Yopish</button>
+      </div>
+      <div class="body">
+        <div class="row-actions">
+          <button class="btn" id="btnPricePrintAdd">+ Qator</button>
+          <button class="btn" id="btnPricePrintSave">Saqlash</button>
+        </div>
+        <table class="table" style="margin-top:8px">
+          <thead>
+            <tr><th>Min</th><th>Max</th><th>Rangli (so‘m/list)</th><th>Oq qora (so‘m/list)</th><th>—</th></tr>
+          </thead>
+          <tbody id="pricePrintBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- XOMASHYO STANDARTI (tiplari va o‘lchami) -->
+  <div class="modal" id="mRawStd">
+    <div class="box">
+      <div class="head">
+        <h3>Xomashyo standarti</h3>
+        <button class="x" data-close="mRawStd">Yopish</button>
+      </div>
+      <div class="body">
+        <h4>Yangi standart</h4>
+        <div class="grid">
+          <div><label>Tip</label><input id="rs_type" class="inp" placeholder="Qog‘oz"></div>
+          <div><label>Xususiyat</label><input id="rs_attr" class="inp" placeholder="80 g/m²"></div>
+          <div><label>O‘lcham</label><input id="rs_size" class="inp" placeholder="A4 yoki A3"></div>
+          <div>
+            <label>Birlik</label>
+            <select id="rs_unit" class="sel">
+              <option value="dona">dona</option>
+              <option value="pachka">pachka</option>
+            </select>
+          </div>
+          <div><label>1 pachka = nechta dona?</label><input id="rs_pack" type="number" class="inp" value="500" min="1"></div>
+        </div>
+        <div class="row-actions">
+          <button class="btn" id="btnRawStdAdd">+ Standart qo‘shish</button>
+          <button class="btn s" id="btnRawStdSave">Saqlash</button>
+        </div>
+
+        <h4 style="margin-top:16px">Standartlar ro‘yxati</h4>
+        <table class="table">
+          <thead><tr><th>Kod</th><th>Tip</th><th>Xususiyat</th><th>O‘lcham</th><th>Birlik</th><th>Pachka hajmi</th><th>—</th></tr></thead>
+          <tbody id="rawStdBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHEK SOZLAMALARI -->
+  <div class="modal" id="mRcptCfg">
+    <div class="box">
+      <div class="head">
+        <h3>Chek sozlamalari</h3>
+        <button class="x" data-close="mRcptCfg">Yopish</button>
+      </div>
+      <div class="body">
+        <div class="grid">
+          <div><label>Sarlavha</label><input id="rcpt_title" class="inp" placeholder="FbookMED POS"></div>
+          <div><label>Kenglik (px)</label><input id="rcpt_width" class="inp" type="number" min="220" max="520" value="320"></div>
+          <div><label>Sarlavha shrift px</label><input id="rcpt_hfs" class="inp" type="number" min="10" max="22" value="16"></div>
+          <div><label>Matn shrift px</label><input id="rcpt_bfs" class="inp" type="number" min="9" max="16" value="11"></div>
+          <div style="grid-column:1/-1"><label>Pastki yozuv</label><input id="rcpt_footer" class="inp" placeholder="Rahmat!"></div>
+        </div>
+        <div class="row-actions">
+          <button class="btn" id="rcptSave">Saqlash</button>
+          <button class="btn s" id="rcptReset">Standart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHEK MODALI -->
+  <div class="modal" id="mReceipt">
+    <div class="box">
+      <div class="head">
+        <h3>Chek</h3>
+        <button class="x" onclick="document.getElementById('mReceipt').style.display='none'">Yopish</button>
+      </div>
+      <div class="body">
+        <div id="receiptWrap" class="center">
+          <div id="receiptContent" class="receipt"></div>
+        </div>
+        <div class="row-actions" style="margin-top:12px">
+          <button class="btn" id="rcptPrint">🖨️ Print</button>
+          <button class="btn" id="rcptImage">🖼️ Rasm</button>
+          <button class="btn s" id="rcptCopy">📋 Nusxa</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KALKULYATOR -->
+  <div class="modal" id="mKalk">
+    <div class="box">
+      <div class="head"><h3>Kalkulyator</h3><button class="x" data-close="mKalk">Yopish</button></div>
+      <div class="body">
+        <div class="grid">
+          <div>
+            <label>Tarif</label>
+            <select id="k_tarif" class="sel"><option>Standart</option><option>Optom</option><option>Maxsus</option></select>
+          </div>
+          <div>
+            <label>Format</label>
+            <select id="k_fmt" class="sel"><option>A4</option><option>A5</option><option>B5</option></select>
+          </div>
+          <div>
+            <label>Muqova</label>
+            <select id="k_cov" class="sel"><option>Qattiq muqovali</option><option>Yumshoq muqovali</option><option>Oddiy muqovali</option><option>Muqovasiz</option></select>
+          </div>
+          <div>
+            <label>Rang</label>
+            <select id="k_col" class="sel"><option>Oq qora</option><option>Rangli</option></select>
+          </div>
+          <div><label>Sahifa</label><input id="k_page" class="inp" type="number" min="1" value="200"></div>
+          <div><label>Soni</label><input id="k_qty" class="inp" type="number" min="1" value="1"></div>
+        </div>
+        <div class="row-actions" style="margin-top:10px">
+          <button class="btn" id="btnCalcRun">Hisoblash</button>
+          <div class="card">Birlik: <b id="k_unit">0</b> so‘m</div>
+          <div class="card">Summa: <b id="k_sum">0</b> so‘m</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PARAMETRLAR (oddiy oyna) -->
+  <div class="modal" id="mParam">
+    <div class="box">
+      <div class="head"><h3>Parametr tugmalari</h3><button class="x" data-close="mParam">Yopish</button></div>
+      <div class="body">
+        <p class="small">Hozircha maxsus parametrlar yo‘q. Kerak bo‘lsa keyin qo‘shamiz.</p>
+      </div>
+    </div>
+  </div>
+
+</body>
 </html>
