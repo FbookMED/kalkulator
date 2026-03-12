@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kitob narxi kalkulyatori</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</head>
+
+<body>
+  <div class="dark-mode-toggle" onclick="toggleDarkMode()" title="Tungi rejim">
+    <span id="darkModeIcon">🌙</span>
+  </div>
+
+  <div id="captureArea" class="container">
+    <div class="banner">
+      <div class="banner-text">
+        <span>FbookMED</span>
+        <span class="sub">najot-ilmda</span>
+        <div class="scrolling-wrapper">
+          <div class="scrolling-text" id="scrollingText">Eng arzon va sifatli chop etish</div>
+        </div>
+      </div>
+    </div>
+
+    <h2>KITOB NARXI KALKULATORI</h2>
+
+    <div class="f-field">
+      <button class="select-button float-btn" id="tarifBtn" type="button" onclick="showModal('tarif')" aria-label="Tarif tanlash">
+        <span class="float-label">Tarif * </span>
+        <span class="float-value" id="tarifValue"></span>
+        <span class="help">?</span>
+      </button>
+      <select id="tarif" onchange="korsatmaChiqar()" style="display:none;">
+        <option disabled selected value=""></option>
+        <option>Standart</option>
+        <option>Optom</option>
+        <option>Maxsus</option>
+      </select>
+    </div>
+    <div id="izoh"></div>
+
+    <div class="row">
+      <div>
+        <div class="f-field">
+          <button class="select-button float-btn" id="formatBtn" type="button" onclick="showModal('format')" aria-label="Format tanlash">
+            <span class="float-label">Format *</span>
+            <span class="float-value" id="formatValue"></span>
+          </button>
+          <select id="format" style="display:none;">
+            <option disabled selected value=""></option>
+            <option>A4</option>
+            <option>A5</option>
+            <option>B5</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <div class="f-field">
+          <button class="select-button float-btn" id="muqovaBtn" type="button" onclick="showModal('muqova')" aria-label="Muqova tanlash">
+            <span class="float-label">Muqova *</span>
+            <span class="float-value" id="muqovaValue"></span>
+          </button>
+          <select id="muqova" style="display:none;">
+            <option disabled selected value=""></option>
+            <option>Qattiq muqovali</option>
+            <option>Yumshoq muqovali</option>
+            <option>Simli pereplyot</option>
+            <option>Plastik pereplyot</option>
+            <option>Oddiy muqovali</option>
+            <option>Muqovasiz</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <div class="f-field">
+          <button class="select-button float-btn" id="rangBtn" type="button" onclick="showModal('rang')" aria-label="Rang tanlash">
+            <span class="float-label">Rang *</span>
+            <span class="float-value" id="rangValue"></span>
+          </button>
+          <select id="rang" style="display:none;">
+            <option disabled selected value=""></option>
+            <option>Oq qora</option>
+            <option>Rangli</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label for="sahifa">Sahifa soni:</label>
+        <input id="sahifa" placeholder="Sahifa soni" type="number" min="1"/>
+      </div>
+    </div>
+
+    <div id="qogoz"></div>
+
+    <div id="priceBanner" class="price-banner">
+      <div class="left">
+        <div class="title">Narx avtomatik hisoblanadi</div>
+        <div class="hint">Maydonlarni to‘ldirsangiz natija chiqadi</div>
+      </div>
+      <div class="value" id="priceValue">—</div>
+    </div>
+
+    <!-- Action row: ikkita kichik tugma -->
+    <div class="action-row">
+      <button class="action-btn save-btn" onclick="saveAsImage()" title="Rasm qilib saqlash">
+        📸 Rasm saqlash
+      </button>
+      <button class="action-btn history-btn" onclick="showHistoryModal()" title="Oxirgi hisoblar">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+          <path d="M3 3v5h5"/>
+          <path d="M12 7v5l4 2"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+<!-- History Modal -->
+<div class="modal" id="historyModal">
+  <div class="modal-content">
+    <h3 style="font-size:17px;font-weight:800;margin-bottom:16px;">🕐 Oxirgi hisoblar</h3>
+    <div id="historyItems"></div>
+    <button onclick="document.getElementById('historyModal').style.display='none'" style="margin-top:18px;background:#eee;color:#333;">✕ Yopish</button>
+  </div>
+</div>
+
+  <footer>
+    <div class="brand">FbookMED</div>
+    <div class="contact-row">
+      <a class="contact-banner" href="tel:+998900152260">📞 +998900152260</a>
+      <a class="contact-banner" href="https://t.me/FbookMED" target="_blank">
+        <img alt="Telegram logotipi" src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg"/>FbookMED
+      </a>
+      <a class="contact-banner" href="https://t.me/FbookMED1" target="_blank">
+        <img alt="Telegram logotipi" src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg"/>Admin
+      </a>
+      <a class="contact-banner" href="https://youtube.com/@fbookmed?feature=shared" target="_blank">
+        <img alt="YouTube" src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" style="height:18px;width:18px;"/>YouTube
+      </a>
+      <a class="contact-banner" href="https://uzum.uz/ru/shop/fbookmed" target="_blank">
+        <img alt="Uzum" src="https://play-lh.googleusercontent.com/rHQT7QaBJoQJeE9Ela8HKB_E2geP4IZ-JLvfdnE87ycnaBIZjeyVhRAr6XUz6xf1FMlV"/>Uzum Market
+      </a>
+    </div>
+  </footer>
+
+<!-- Modal Dialogs -->
+<div class="modal" id="tarifModal"><div class="modal-content">
+  <button onclick="selectOption('tarif','Standart')">Standart</button>
+  <button onclick="selectOption('tarif','Optom')">Optom</button>
+  <button onclick="selectOption('tarif','Maxsus')">Maxsus</button>
+</div></div>
+
+<div class="modal" id="formatModal"><div class="modal-content">
+  <button onclick="selectOption('format','A4')">A4</button>
+  <button onclick="selectOption('format','A5')">A5</button>
+  <button onclick="selectOption('format','B5')">B5</button>
+</div></div>
+
+<div class="modal" id="muqovaModal"><div class="modal-content">
+  <button onclick="selectOption('muqova','Qattiq muqovali')">Qattiq muqovali</button>
+  <button onclick="selectOption('muqova','Yumshoq muqovali')">Yumshoq muqovali</button>
+  <button onclick="selectOption('muqova','Simli pereplyot')">Simli pereplyot</button>
+  <button onclick="selectOption('muqova','Plastik pereplyot')">Plastik pereplyot</button>
+  <button onclick="selectOption('muqova','Oddiy muqovali')">Oddiy muqovali</button>
+  <button onclick="selectOption('muqova','Muqovasiz')">Muqovasiz</button>
+</div></div>
+
+<div class="modal" id="rangModal"><div class="modal-content">
+  <button onclick="selectOption('rang','Oq qora')">Oq qora</button>
+  <button onclick="selectOption('rang','Rangli')">Rangli</button>
+</div></div>
+
+<script src="script.js"></script>
+</body>
+</html>
