@@ -1,0 +1,1700 @@
+:root {
+  --primary-color: #007acc;
+  --hover-color: #005f99;
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(200, 220, 240, 0.5);
+  --bg-gradient: linear-gradient(135deg, #e8f4fd 0%, #d0e8f8 100%);
+  --text-color: #333;
+  --input-bg: #fff;
+  --subtext-color: #666;
+}
+
+body.dark {
+  --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --text-color: #e0e0e0;
+  --input-bg: #2a2a3e;
+  --subtext-color: #aaa;
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+  color: var(--text-color);
+  padding: 0 16px 40px; /* Navbar sababli top paddingni olib tashladik */
+  max-width: 620px;
+  margin: auto;
+  min-height: 100vh;
+  transition: background 0.4s ease, color 0.3s ease;
+}
+
+/* Navbar */
+.navbar {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2500;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1.5px solid var(--glass-border);
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+@media (max-width: 560px) {
+  .navbar { display: none !important; }
+}
+.nav-container {
+  max-width: 620px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-logo {
+  font-weight: 900;
+  font-size: 20px;
+  letter-spacing: 1px;
+  color: var(--primary-color);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Nav Basket Button */
+.nav-basket-btn {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
+}
+.nav-basket-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(217, 119, 6, 0.35);
+}
+.nav-basket-btn:active { transform: scale(0.96); }
+
+.nav-basket-btn .basket-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #f43f5e;
+  border: 2.5px solid var(--input-bg);
+}
+
+/* Menu Dropdown */
+.menu-trigger {
+  background: rgba(0,0,0,0.05);
+  color: var(--text-color);
+  border: 1px solid var(--glass-border);
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.menu-trigger:hover {
+  background: rgba(0,0,0,0.1);
+  border-color: var(--primary-color);
+}
+.menu-wrapper { position: relative; }
+
+/* Menu Dropdown - ENDI KERAK EMAS (Modalga ko'chdi) */
+.menu-dropdown { display: none !important; }
+
+.menu-header {
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: var(--subtext-color);
+  margin: 10px 14px 6px;
+  letter-spacing: 1px;
+}
+.menu-item {
+  width: 100% !important;
+  background: transparent !important;
+  color: var(--text-color) !important;
+  text-align: left !important;
+  padding: 12px 14px !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin-top: 0 !important;
+}
+.menu-item:hover {
+  background: rgba(0, 122, 204, 0.08) !important;
+  color: var(--primary-color) !important;
+}
+
+/* Profile Section in Menu */
+.menu-profile-section {
+  padding: 8px;
+  border-bottom: 1.5px solid var(--glass-border);
+  margin-bottom: 10px;
+}
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 122, 204, 0.05);
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid var(--glass-border);
+}
+.profile-avatar {
+  width: 44px;
+  height: 44px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 800;
+  box-shadow: 0 4px 10px rgba(0, 122, 204, 0.2);
+}
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+.profile-name {
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--text-color);
+}
+.profile-phone {
+  font-size: 12px;
+  color: var(--subtext-color);
+  font-weight: 500;
+}
+.profile-logout-btn {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #ff5252;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  width: auto !important;
+  display: inline-block !important;
+}
+
+.login-prompt-btn {
+  width: 100% !important;
+  padding: 14px !important;
+  background: var(--primary-color) !important;
+  color: white !important;
+  font-weight: 800 !important;
+  border-radius: 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  margin-top: 0 !important;
+  box-shadow: 0 4px 12px rgba(0, 122, 204, 0.2);
+}
+.login-prompt-btn:hover { transform: translateY(-2px); }
+
+/* Profile Form */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 5px;
+}
+
+@keyframes slideDownFade {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Bottom Navigation (Mobile Only) */
+.bottom-nav {
+  display: none; /* Desktopda yopiq */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 68px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-top: 1.5px solid var(--glass-border);
+  z-index: 3000;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 10px;
+  box-shadow: 0 -4px 25px rgba(0,0,0,0.08);
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  background: transparent !important;
+  border: none !important;
+  color: var(--subtext-color) !important;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 11px;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.nav-item .nav-icon {
+  font-size: 22px;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.nav-item.active {
+  color: var(--primary-color) !important;
+}
+
+.nav-item.active .nav-icon {
+  transform: scale(1.15) translateY(-2px);
+}
+
+.nav-icon-wrapper {
+  position: relative;
+  display: flex;
+}
+
+.nav-item .basket-badge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  background: #f43f5e;
+  border: 2px solid var(--input-bg);
+  font-size: 9px;
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 560px) {
+  body { padding-bottom: 85px !important; }
+  .bottom-nav { display: flex; }
+}
+
+@media (max-width: 480px) {
+  .nav-basket-text { display: none; }
+  .nav-basket-btn { padding: 10px; }
+  .nav-logo { font-size: 18px; }
+}
+
+/* Eski Tugmalarni olib tashlash (Dark mode toggle endi kerak emas) */
+.dark-mode-toggle { display: none !important; }
+
+/* Glass Card Container */
+.container {
+  background: var(--glass-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 28px 24px;
+  box-shadow: var(--shadow);
+  margin-top: 10px;
+  transition: background 0.4s ease, border-color 0.3s ease;
+}
+
+/* Banner */
+.banner {
+  background: linear-gradient(135deg, #007acc, #00c6ff);
+  color: white;
+  text-align: center;
+  padding: 28px 15px 18px;
+  border-radius: 18px;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 30px rgba(0, 122, 204, 0.25);
+  overflow: hidden;
+  position: relative;
+}
+.banner::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  left: -40%;
+  width: 180%;
+  height: 180%;
+  background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 65%);
+  animation: bannerPulse 6s ease-in-out infinite alternate;
+}
+@keyframes bannerPulse {
+  from { transform: scale(1); }
+  to   { transform: scale(1.1); }
+}
+.banner-text > span:first-child {
+  display: block;
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-shadow: 0 3px 8px rgba(0,0,0,0.2);
+}
+.banner-text .sub {
+  font-size: 16px;
+  font-style: italic;
+  opacity: 0.88;
+  margin-top: 4px;
+  display: block;
+}
+
+/* Scrolling text */
+.scrolling-wrapper {
+  max-width: 100%;
+  overflow: hidden;
+  position: relative;
+  height: 30px;
+  margin-top: 10px;
+}
+.scrolling-text {
+  font-size: 16px;
+  font-style: italic;
+  white-space: nowrap;
+  display: inline-block;
+  animation: scroll-left 10s linear 1;
+  padding-left: 100%;
+}
+.scrolling-text.telegram { color: #ffe600; }
+@keyframes scroll-left {
+  0%   { transform: translateX(0%); }
+  100% { transform: translateX(-200%); }
+}
+
+/* Heading */
+h2 {
+  text-align: center;
+  color: var(--text-color);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  margin-bottom: 20px;
+}
+
+/* Hint / Info boxes */
+#izoh {
+  font-style: italic;
+  color: var(--primary-color);
+  border-left: 4px solid var(--primary-color);
+  background: rgba(0, 122, 204, 0.06);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-top: 10px;
+  min-height: 0;
+  transition: all 0.3s ease;
+}
+#qogoz {
+  font-size: 13px;
+  color: var(--subtext-color);
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(0, 122, 204, 0.04);
+  border: 1px solid var(--glass-border);
+  transition: all 0.3s ease;
+  line-height: 1.5;
+  display: block;
+  min-height: 0;
+}
+
+#qogoz.warning {
+  background: rgba(255, 143, 0, 0.08);
+  border-color: rgba(255, 143, 0, 0.3);
+  color: #c2410c;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(255, 143, 0, 0.1);
+}
+
+body.dark #qogoz.warning {
+  background: rgba(255, 143, 0, 0.12);
+  color: #fbbf24;
+  border-color: rgba(255, 143, 0, 0.4);
+}
+
+/* Row layout */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 12px;
+}
+.row > div { flex: 1 1 200px; }
+
+/* Labels */
+label {
+  font-weight: 600;
+  color: var(--text-color);
+  display: block;
+  margin-top: 14px;
+  font-size: 14px;
+}
+
+/* Number input */
+input[type="number"] {
+  width: 100%;
+  padding: 12px 14px;
+  margin-top: 6px;
+  border: 1.5px solid var(--glass-border);
+  border-radius: 12px;
+  background: var(--input-bg);
+  color: var(--text-color);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+input[type="number"]:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(0, 122, 204, 0.12);
+}
+
+/* Floating select button */
+.f-field { margin-top: 12px; }
+
+.select-button {
+  width: 100%;
+  background: var(--input-bg);
+  color: var(--text-color);
+  border: 1.5px solid var(--glass-border);
+  border-radius: 12px;
+  font-size: 15px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  position: relative;
+}
+.select-button:hover {
+  border-color: var(--primary-color);
+  transform: scale(1.01);
+  box-shadow: 0 4px 12px rgba(0,122,204,0.12);
+}
+
+.float-btn {
+  min-height: 58px;
+  padding: 18px 42px 10px 48px;
+  line-height: 1.2;
+}
+.btn-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  transition: all 0.3s ease;
+}
+.float-btn .float-label {
+  position: absolute;
+  left: 48px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-weight: 600;
+  color: var(--subtext-color);
+  font-size: 15px;
+  pointer-events: none;
+  transition: all 0.18s ease;
+}
+.float-btn .float-value {
+  display: block;
+  font-weight: 700;
+  color: var(--text-color);
+  font-size: 15px;
+  opacity: 0;
+  margin-top: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 0.18s ease;
+}
+.float-btn.filled { 
+  border-color: var(--primary-color);
+  background: rgba(0, 122, 204, 0.05);
+  box-shadow: 0 4px 15px rgba(0, 122, 204, 0.1);
+}
+.float-btn.filled .float-label {
+  top: 10px;
+  transform: none;
+  font-size: 11px;
+  color: var(--primary-color);
+  left: 48px;
+}
+.float-btn.filled .btn-icon {
+  font-size: 16px;
+  top: 14px;
+  transform: none;
+}
+.float-btn.filled .float-value { opacity: 1; }
+.float-btn:focus-visible {
+  outline: 3px solid rgba(0,122,204,0.28);
+  outline-offset: 2px;
+}
+.float-btn .help {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 13px;
+  opacity: 0.5;
+  pointer-events: auto;
+  cursor: help;
+  transition: all 0.2s ease;
+  z-index: 5;
+}
+.float-btn .help:hover {
+  opacity: 1;
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* Sahifa soni — float input */
+.float-input-wrap {
+  position: relative;
+  margin-top: 0;
+}
+.float-input {
+  width: 100%;
+  min-height: 54px;
+  padding: 22px 40px 8px 14px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-color);
+  background: var(--input-bg);
+  border: 1.5px solid var(--glass-border);
+  border-radius: 12px;
+  outline: none;
+  appearance: textfield;
+  -moz-appearance: textfield;
+  cursor: text;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.float-input::-webkit-inner-spin-button,
+.float-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+.float-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(0, 122, 204, 0.12);
+}
+.float-input-wrap .float-label {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-weight: 600;
+  color: var(--subtext-color);
+  font-size: 15px;
+  pointer-events: none;
+  transition: top 0.18s ease, font-size 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+.float-input:focus ~ .float-label,
+.float-input:not(:placeholder-shown) ~ .float-label {
+  top: 10px;
+  transform: none;
+  font-size: 11px;
+  color: var(--primary-color);
+}
+
+/* Qalam ikonkasi */
+.input-icon {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--subtext-color);
+  opacity: 0.5;
+  pointer-events: none;
+  transition: opacity 0.2s ease, color 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+.float-input:focus ~ .input-icon {
+  color: var(--primary-color);
+  opacity: 1;
+}
+
+.price-banner {
+  margin-top: 20px;
+  padding: 18px 20px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #007acc, #00c6ff);
+  color: #fff;
+  box-shadow: 0 12px 30px rgba(0, 122, 204, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  user-select: none;
+  border: 1px solid rgba(255,255,255,0.25);
+  animation: none;
+}
+.add-basket-btn {
+  margin-top: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.add-basket-btn:hover {
+  background: white;
+  color: var(--primary-color);
+  transform: scale(1.05);
+}
+.add-basket-btn:active { transform: scale(0.95); }
+.order-now-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  margin-top: 4px;
+}
+.order-now-btn:hover {
+  background: #2e7d32 !important;
+  color: #fff !important;
+  border-color: #2e7d32 !important;
+}
+
+/* Disabled holati uchun */
+.add-basket-btn:disabled, .add-basket-btn:disabled:hover {
+  background: #cbd5e1 !important;
+  color: #64748b !important;
+  border-color: #94a3b8 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+  opacity: 0.7;
+}
+
+body.dark .add-basket-btn:disabled {
+  background: #334155 !important;
+  color: #94a3b8 !important;
+  border-color: #475569 !important;
+}
+
+.add-basket-btn.pulse-once {
+  animation: btnSuccess 0.5s ease;
+}
+@keyframes btnSuccess {
+  0% { transform: scale(1); background: rgba(255,255,255,0.2); }
+  50% { transform: scale(1.1); background: #4caf50; }
+  100% { transform: scale(1); background: rgba(255,255,255,0.2); }
+}
+.price-banner .left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+.price-banner .title {
+  font-weight: 800;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  opacity: 0.9;
+}
+.price-banner .hint {
+  font-size: 12px;
+  opacity: 0.8;
+}
+.price-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+.price-banner .value {
+  font-size: 22px;
+  font-weight: 900;
+  white-space: nowrap;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+.price-per {
+  font-size: 11px;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.price-banner.warn {
+  background: linear-gradient(135deg, #ff8f00, #ffca28);
+  color: #1f1f1f;
+  box-shadow: 0 12px 30px rgba(255,143,0,0.3);
+}
+.price-banner.err {
+  background: linear-gradient(135deg, #e53935, #ff5252);
+  box-shadow: 0 12px 30px rgba(229,57,53,0.3);
+}
+.price-banner.success {
+  background: linear-gradient(135deg, #2e7d32, #4caf50);
+  box-shadow: 0 12px 30px rgba(46,125,50,0.3);
+}
+@keyframes pulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.015); }
+  100% { transform: scale(1); }
+}
+
+/* Kitob soni counter */
+.kitob-soni-field {
+  margin-top: 14px;
+}
+.kitob-soni-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--input-bg);
+  border: 1.5px solid var(--glass-border);
+  border-radius: 14px;
+  padding: 12px 18px;
+  gap: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.kitob-soni-wrap:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 12px rgba(0,122,204,0.10);
+}
+
+.small-counter {
+  margin-top: 0 !important;
+  height: 54px; /* O'ng tarafdagi kabi */
+  padding: 8px 14px !important;
+}
+.small-counter .kitob-counter {
+  height: 38px;
+}
+.small-counter .counter-btn {
+  width: 36px;
+  height: 36px;
+}
+.small-counter .counter-value {
+  font-size: 16px;
+  min-width: 35px;
+}
+.kitob-label {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+.kitob-counter {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: rgba(0,122,204,0.08);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1.5px solid rgba(0,122,204,0.18);
+}
+.counter-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: var(--primary-color);
+  font-size: 22px;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.15s ease;
+  line-height: 1;
+  padding: 0;
+}
+.counter-btn:hover {
+  background: var(--primary-color);
+  color: #fff;
+  transform: scale(1.08);
+}
+.counter-btn:active { transform: scale(0.95); }
+.counter-value {
+  min-width: 45px;
+  max-width: 80px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--text-color);
+  user-select: none;
+  padding: 0 4px;
+  background: transparent;
+  border: none;
+  outline: none;
+  appearance: none;
+  -moz-appearance: textfield;
+}
+.input-no-spinner::-webkit-inner-spin-button,
+.input-no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Muqova va Qism birlashtirilgan wrapper */
+.muqova-wrapper {
+  flex: 1 1 240px;
+  display: flex !important;
+  align-items: stretch;
+  background: var(--input-bg);
+  border: 1.5px solid var(--glass-border);
+  border-radius: 12px;
+  margin-top: 12px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  overflow: visible !important; /* Dropdown ko'rinishi uchun */
+  min-height: 54px;
+  position: relative; /* Dropdown uchun */
+}
+.muqova-wrapper:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 12px rgba(0,122,204,0.12);
+}
+.muqova-main-btn {
+  flex: 1;
+  border: none !important;
+  border-radius: 0 !important;
+  height: 100% !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  text-align: left;
+  padding: 18px 14px 10px 48px !important;
+  position: relative;
+}
+.qism-select-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-left: 1px solid var(--glass-border);
+  background: rgba(0, 122, 204, 0.08); 
+  min-width: 100px;
+  align-self: stretch;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  position: relative;
+}
+.qism-select-area.hidden {
+  display: none !important;
+}
+.qism-select-area:hover {
+  background: rgba(0, 122, 204, 0.15);
+}
+.qism-title {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--primary-color);
+  margin-bottom: 3px;
+  letter-spacing: 0.5px;
+}
+.qism-current-val {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-color);
+  font-size: 16px;
+  font-weight: 900;
+}
+.qism-current-val svg {
+  opacity: 0.6;
+}
+
+/* Qism Dropdown */
+.qism-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--modal-bg);
+  backdrop-filter: blur(15px);
+  border: 1.5px solid var(--glass-border);
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  z-index: 2000;
+  display: none;
+  min-width: 220px;
+  animation: slideDown 0.25s ease;
+}
+.qism-dropdown.show {
+  display: block;
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.qism-grid-mini {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  min-width: 140px;
+}
+.qism-num-btn {
+  width: auto;
+  min-width: 60px;
+  height: 38px;
+  border-radius: 8px;
+  border: 1px solid var(--glass-border);
+  background: rgba(0, 122, 204, 0.05);
+  color: var(--text-color);
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.qism-num-btn:hover {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+  transform: scale(1.1);
+}
+
+/* Action row: kichik tugmalar qatori */
+.action-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  border: none;
+  border-radius: 13px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+/* Rasm saqlash tugmasi */
+.basket-btn {
+  flex: 1.2;
+  padding: 12px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  box-shadow: 0 5px 14px rgba(217, 119, 6, 0.28);
+  position: relative;
+}
+.basket-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #ef4444;
+  color: white;
+  font-size: 10px;
+  font-weight: 900;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--input-bg);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.save-btn {
+  flex: 1.2;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--primary-color), #00c6ff);
+  color: white;
+  box-shadow: 0 5px 14px rgba(0, 122, 204, 0.28);
+}
+.reset-btn {
+  flex: 1;
+  padding: 12px;
+  background: rgba(0,0,0,0.08); /* Bir oz quyuqroq fon */
+  color: var(--text-color);
+  border: 1px solid var(--glass-border);
+}
+.telegram-btn {
+  flex: 1.2;
+  padding: 12px;
+  background: linear-gradient(135deg, #229ED9, #34B7F1);
+  color: white;
+  box-shadow: 0 5px 14px rgba(34, 158, 217, 0.28);
+}
+.save-btn:hover, .reset-btn:hover, .telegram-btn:hover, .basket-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+.reset-btn:hover { background: rgba(0,0,0,0.15); } /* Hoverda yorqinroq */
+.basket-btn:hover { box-shadow: 0 8px 20px rgba(217, 119, 6, 0.38); }
+.telegram-btn:hover { box-shadow: 0 8px 20px rgba(34, 158, 217, 0.38); }
+
+/* Tarix ikonkasi tugmasi */
+.history-btn {
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1.5px solid var(--glass-border);
+  color: var(--primary-color);
+  box-shadow: var(--shadow);
+  border-radius: 13px;
+  flex-shrink: 0;
+}
+.history-btn:hover {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 122, 204, 0.3);
+}
+
+/* History modal ichidagi "Yopish" tugma */
+.modal-content button[style*="background:#eee"] {
+  background: rgba(0,0,0,0.07) !important;
+  color: var(--text-color) !important;
+  font-weight: 600;
+}
+
+/* History */
+.history-container {
+  margin-top: 20px;
+  padding: 14px 16px;
+  background: rgba(0,122,204,0.04);
+  border-radius: 14px;
+  border: 1px solid var(--glass-border);
+}
+.history-container h4 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--subtext-color);
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  margin-bottom: 10px;
+}
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--glass-border);
+}
+.history-item:last-child { border-bottom: none; }
+
+.history-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  padding-right: 15px;
+}
+.history-title {
+  font-weight: 700;
+  font-size: 14.5px;
+  color: var(--text-color);
+  display: block;
+}
+.history-subtitle {
+  font-size: 12.5px;
+  color: var(--subtext-color);
+  line-height: 1.3;
+}
+
+.history-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.history-price {
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--primary-color);
+  white-space: nowrap;
+}
+
+.restore-history-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(0, 122, 204, 0.08); /* primary light */
+  color: var(--primary-color);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 0 !important;
+  padding: 0 !important;
+}
+.restore-history-btn:hover {
+  background: var(--primary-color);
+  color: white;
+  transform: scale(1.08) rotate(15deg);
+  box-shadow: 0 4px 12px rgba(0, 122, 204, 0.25);
+}
+.restore-history-btn:active {
+  transform: scale(0.95);
+}
+
+.clear-history-btn {
+  flex: 0.6;
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+.clear-history-btn:hover {
+  background: #ff5252 !important;
+  color: white !important;
+  border-color: #ff5252 !important;
+  box-shadow: 0 4px 12px rgba(255, 82, 82, 0.2);
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.55);
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  backdrop-filter: blur(4px);
+}
+/* Tashqarida bosib yopish uchun to'liq ekranni qoplovchi overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  cursor: pointer;
+  z-index: 0;
+  background: transparent;
+}
+.modal-content {
+  position: relative;
+  z-index: 1;
+  background: var(--input-bg);
+  padding: 24px;
+  border-radius: 22px;
+  animation: fadeInUp 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  width: 90%;
+  max-width: 320px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+  max-height: 80vh;
+  overflow-y: auto;
+  border: 1px solid var(--glass-border);
+}
+.modal-header {
+  font-weight: 800;
+  font-size: 18px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: var(--primary-color);
+}
+.modal-content button {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+  padding: 13px;
+  border-radius: 12px;
+  font-size: 15px;
+}
+.modal-content button:hover {
+  background: var(--hover-color);
+  transform: scale(1.02);
+}
+/* Savat modali uchun maxsus */
+.basket-modal-content {
+  max-width: 380px;
+}
+.basket-items-list {
+  max-height: 50vh;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+.basket-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: rgba(0, 122, 204, 0.05);
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  margin-bottom: 8px;
+  position: relative;
+}
+.basket-item-info {
+  flex: 1;
+  min-width: 0;
+}
+.basket-item-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: var(--primary-color);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 900;
+  border-radius: 50%;
+  margin-right: 8px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 5px rgba(0, 122, 204, 0.2);
+}
+
+.basket-item-title {
+  font-weight: 700;
+  font-size: 14.5px;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  word-break: break-all;
+}
+.basket-item-subtitle {
+  font-size: 11px;
+  color: var(--subtext-color);
+  display: block;
+  margin-top: 2px;
+}
+.basket-item-price {
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--primary-color);
+  margin-left: 10px;
+  white-space: nowrap;
+}
+.remove-basket-item {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: #ef4444 !important;
+  border: none !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  border-radius: 10px !important;
+  margin-left: 12px !important;
+  margin-top: 0 !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 18px !important;
+  font-weight: 900 !important;
+  transition: all 0.2s ease !important;
+  flex-shrink: 0 !important;
+}
+.remove-basket-item:hover {
+  background: #ef4444 !important;
+  color: white !important;
+  transform: scale(1.1);
+}
+.basket-total {
+  border-top: 2px dashed var(--glass-border);
+  padding-top: 15px;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.total-label {
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--subtext-color);
+  text-transform: uppercase;
+}
+.total-value {
+  font-weight: 900;
+  font-size: 20px;
+  color: var(--primary-color);
+}
+.basket-footer-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+.basket-footer-buttons button {
+  flex: 1;
+  margin-top: 0 !important;
+  font-size: 13.5px !important;
+  padding: 11px !important;
+  font-weight: 700;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.clear-basket-btn {
+  background: rgba(239, 68, 68, 0.05) !important;
+  color: #ef4444 !important;
+  border: 1.5px solid rgba(239, 68, 68, 0.1) !important;
+}
+.clear-basket-btn:hover {
+  background: #ef4444 !important;
+  color: white !important;
+  border-color: #ef4444 !important;
+}
+.close-basket-btn {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: var(--text-color) !important;
+  border: 1.5px solid var(--glass-border) !important;
+}
+.close-basket-btn:hover {
+  background: rgba(0, 0, 0, 0.1) !important;
+  transform: scale(1.02);
+}
+
+body.dark .close-basket-btn {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+@keyframes fadeInUp {
+  from { transform: translateY(40px) scale(0.92); opacity: 0; }
+  to   { transform: translateY(0)    scale(1);    opacity: 1; }
+}
+
+/* Footer */
+footer {
+  margin-top: 40px;
+  padding: 24px 0 16px;
+  text-align: center;
+  border-top: 1px solid var(--glass-border);
+}
+footer .brand {
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--text-color);
+  letter-spacing: 1px;
+}
+.contact-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+.contact-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1.5px solid var(--glass-border);
+  color: var(--text-color);
+  padding: 10px 16px;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  box-shadow: var(--shadow);
+  transition: background 0.25s ease, color 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.contact-banner img, .contact-banner svg {
+  height: 20px !important;
+  width: 20px !important;
+  object-fit: contain;
+  border-radius: 4px;
+}
+.contact-banner:hover {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,122,204,0.25);
+}
+
+/* Responsive */
+@media (max-width: 560px) {
+  .row > div { flex: 1 1 100%; }
+  .price-banner { flex-direction: column; align-items: center; text-align: center; }
+  .price-right { align-items: center; }
+  .price-banner .value { font-size: 26px; }
+  body { padding: 14px 12px; }
+  .container { padding: 20px 16px; }
+  .muqova-wrapper { 
+    flex-direction: row !important; 
+    align-items: center !important; 
+    background: var(--input-bg) !important;
+    border: 1.5px solid var(--glass-border) !important;
+    border-radius: 14px !important;
+    padding: 0 4px 0 0 !important; 
+    justify-content: space-between !important;
+    height: 54px !important; 
+    margin-top: 14px !important;
+  }
+  .muqova-main-btn {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    flex: 1 !important;
+    position: relative !important; /* Absolute elementlarni ichiga qulflash (Bug FIX) */
+    height: 100% !important;
+    padding: 0 !important;
+  }
+  .muqova-main-btn:active {
+    transform: none !important;
+  }
+  
+  /* Absolute Offsets (Sticker va Overlap 100% tuzatish) */
+  .muqova-main-btn .btn-icon {
+    position: absolute !important;
+    left: 16px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    font-size: 16px !important;
+    margin: 0 !important;
+  }
+  .muqova-main-btn .float-label {
+    position: absolute !important;
+    left: 44px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    font-size: 15px !important;
+    color: var(--subtext-color) !important;
+    transition: all 0.18s ease !important;
+  }
+  .muqova-main-btn.filled .float-label {
+    top: 8px !important;
+    transform: none !important;
+    font-size: 11px !important;
+    color: var(--primary-color) !important;
+  }
+  .muqova-main-btn .float-value {
+    position: absolute !important;
+    left: 44px !important;
+    top: 25px !important; /* Label dan keyingi silliq joy */
+    margin: 0 !important;
+    font-size: 15px !important;
+    opacity: 1 !important;
+  }
+
+  .qism-select-area { 
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 10px !important;
+    padding: 4px 10px !important; 
+    width: fit-content !important;
+    margin: 0 !important; 
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    background: rgba(0, 122, 204, 0.04) !important; 
+    height: 36px !important;
+    align-self: center !important; /* Vertikal o'rtaga qulflash */
+  }
+
+
+
+  .qism-title {
+    font-size: 13px !important;
+    text-transform: none !important; /* Qism holatida capital emas */
+    color: var(--text-color) !important;
+    font-weight: 600 !important;
+  }
+  .qism-title::after {
+    content: ":";
+  }
+  .qism-current-val {
+    font-size: 16px !important;
+    color: var(--text-color) !important;
+  }
+  .qism-grid { grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  .qism-select-area.hidden { display: none !important; }
+
+  /* --- Yangi Mobil Dizayn --- */
+
+  /* Bottom sheet modallar */
+  .modal {
+    align-items: flex-start !important;
+    background: var(--bg-gradient) !important;
+    backdrop-filter: blur(0px) !important;
+  }
+  .modal-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
+    animation: fadeInModal 0.25s ease-out !important;
+    padding: 24px 16px 100px !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow-y: auto !important;
+  }
+  @keyframes fadeInModal {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }  /* Modallardagi tugmalarni 2-ta ustunga joylash (Grid) - Savat, History va Kabinet dan tashqari */
+  .modal:not(#historyModal):not(#basketModal):not(#phoneModal):not(#cabinetModal) .modal-content {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+    align-content: start !important;
+  }
+  /* Header sarlavhasi to'liq uzunlik bo'lishi uchun */
+  .modal:not(#historyModal):not(#basketModal):not(#phoneModal):not(#cabinetModal) .modal-header {
+    grid-column: 1 / -1 !important;
+    margin-bottom: 8px !important;
+  }
+  /* Tugmalarni silliqlash */
+  .modal:not(#historyModal):not(#basketModal):not(#phoneModal):not(#cabinetModal) .modal-content button {
+    margin-top: 0 !important;
+    height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-weight: 700 !important;
+    border-radius: 14px !important;
+  }
+
+  /* Savat va Kabinet uchun maxsus padding va silliqlik */
+  #basketModal .modal-content, #cabinetModal .modal-content {
+    gap: 10px !important;
+  }
+  .basket-item {
+    margin-bottom: 10px !important;
+    padding: 14px !important;
+  }
+}
+
+/* Glow Background Animatsiyasi */
+.glow-bg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: -2; /* Pastda tursin */
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.glow-circle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.5;
+  animation: floatGlow 12s infinite ease-in-out;
+}
+
+/* Light mode uchun ranglar */
+.glow-1 {
+  width: 350px; height: 350px;
+  background: rgba(0, 180, 219, 0.35);
+  top: -80px; right: -80px;
+  animation-duration: 14s;
+}
+
+.glow-2 {
+  width: 300px; height: 300px;
+  background: rgba(0, 131, 176, 0.25);
+  bottom: -50px; left: -100px;
+  animation-duration: 18s;
+  animation-delay: -5s;
+}
+
+.glow-3 {
+  width: 250px; height: 250px;
+  background: rgba(234, 46, 122, 0.15); /* Nozik pushti/binafsha glow */
+  top: 40%; left: 30%;
+  animation-duration: 16s;
+  animation-delay: -3s;
+}
+
+/* Dark Mode uchun nozikroq qilish */
+body.dark .glow-1 { background: rgba(0, 180, 219, 0.15); }
+body.dark .glow-2 { background: rgba(0, 131, 176, 0.1); }
+body.dark .glow-3 { background: rgba(234, 46, 122, 0.08); }
+
+@keyframes floatGlow {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -20px) scale(1.05); }
+  66% { transform: translate(-15px, 30px) scale(0.95); }
+}
+
+/* Toast Notifications */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.toast {
+  background: var(--input-bg);
+  color: var(--text-color);
+  padding: 12px 22px;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  font-weight: 700;
+  font-size: 14px;
+  border: 1.5px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  animation: slideDownToast 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+@keyframes slideDownToast {
+  from { transform: translateY(-30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
