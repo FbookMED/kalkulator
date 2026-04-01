@@ -20,8 +20,54 @@ function toggleDarkMode() {
 }
 
 function showModal(id) {
+  if (id === 'cabinet') {
+    navigateTo('cabinet');
+    return;
+  }
+  if (id === 'basket') {
+    navigateTo('basket');
+    return;
+  }
   const m = document.getElementById(id + 'Modal');
   if (m) m.style.display = 'flex';
+}
+
+function closeModal(id) {
+  if (id === 'cabinet' || id === 'basket') {
+    navigateTo('calculator');
+    return;
+  }
+  const m = document.getElementById(id + 'Modal');
+  if (m) m.style.display = 'none';
+}
+
+// Single Page Application (SPA) Navigation
+function navigateTo(viewId) {
+  triggerHaptic();
+
+  // Barcha view'larni yashirish
+  const views = document.querySelectorAll('.app-view');
+  views.forEach(v => v.classList.remove('active-view'));
+
+  // Kerakli view'ni ko'rsatish
+  const targetView = document.getElementById(viewId + 'View');
+  if (targetView) {
+    targetView.classList.add('active-view');
+  }
+
+  // Navigatsiya tugmalarini yangilash (Bottom nav)
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(item => item.classList.remove('active'));
+  
+  const activeBtn = document.getElementById('btn-' + viewId);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  // Sahifani tepaga qaytarish
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // View'ga mos mantiqiy funksiyalarni chaqirish
+  if (viewId === 'basket') renderBasket();
+  if (viewId === 'cabinet') renderProfile();
 }
 
 function saveToHistory(data) {
@@ -109,13 +155,12 @@ function clearFullBasket() {
     localStorage.removeItem('calcBasket');
     renderBasket();
     updateBasketBadge();
-    document.getElementById('basketModal').style.display = 'none';
+    navigateTo('calculator');
   });
 }
 
 function showBasketModal() {
-  renderBasket();
-  document.getElementById('basketModal').style.display = 'flex';
+  navigateTo('basket');
 }
 
 function renderBasket() {
@@ -128,10 +173,11 @@ function renderBasket() {
   if (!container) return;
   
   if (basket.length === 0) {
-    container.innerHTML = '<div style="text-align:center;padding:20px;opacity:0.6;">Savat bo\'sh</div>';
+    container.innerHTML = '<div style="text-align:center;padding:20px;opacity:0.6;">Savat hozircha bo\'sh... 🛒</div>';
     if (totalArea) totalArea.style.display = 'none';
     if (orderBtn) orderBtn.style.display = 'none';
     if (clearBtn) clearBtn.style.display = 'none';
+    updateBasketBadge();
     return;
   }
 
@@ -139,29 +185,31 @@ function renderBasket() {
   let totalSum = 0;
 
   basket.forEach((item, index) => {
-    const div = document.createElement('div');
-    div.className = 'basket-item';
-    
-    // String narxdan raqamni ajratib olish (jami yaxlit qiymati kerak)
-    // script.js dagi updatePrice da bizda butun son narxlari bor edi, lekin savatda biz string saqladik.
-    // Bizga raqam ko'rinishidagi narx ham kerak. updatePrice ni res ob'ektiga `rawPrice` qo'shamiz.
-    
+    // Har bir element uchun narxni hisoblash (item.price - string "123,000 so'm")
     const priceNum = parseInt(item.price.replace(/[^0-9]/g, ''), 10);
-    totalSum += priceNum;
+    const itemQty = item.kitobSoni || 1;
+    const itemTotal = priceNum * itemQty;
+    totalSum += itemTotal;
 
     const qismText = item.qismSoni > 1 ? ` (${item.qismSoni} qism)` : '';
-
     const indexBadge = `<span class="basket-item-index">${index + 1}</span>`;
     const titleText = item.kitobNomi ? item.kitobNomi : `Kitob`;
-    const subtitleText = `${item.tarif}, ${item.format}, ${item.muqova}${qismText}, ${item.rang}, ${item.sahifa} bet, ${item.kitobSoni} ta kitob`;
+    const subtitleText = `${item.tarif}, ${item.format}, ${item.muqova}${qismText}, ${item.rang}, ${item.sahifa} bet`;
 
+    const div = document.createElement('div');
+    div.className = 'basket-item';
     div.innerHTML = `
       <div class="basket-item-info">
         <span class="basket-item-title">${indexBadge} ${titleText}</span>
         <span class="basket-item-subtitle">${subtitleText}</span>
       </div>
-      <div class="basket-item-price">${item.price}</div>
-      <button class="remove-basket-item" onclick="removeFromBasket(${item.id})">×</button>
+      <div class="basket-item-qty-controls">
+        <button class="qty-btn" onclick="changeBasketQuantity(${index}, -1)">-</button>
+        <span class="qty-value">${itemQty}</span>
+        <button class="qty-btn" onclick="changeBasketQuantity(${index}, 1)">+</button>
+      </div>
+      <div class="basket-item-price">${itemTotal.toLocaleString()} s.</div>
+      <button class="remove-basket-item" onclick="removeFromBasket(${index})" title="O'chirish">×</button>
     `;
     container.appendChild(div);
   });
@@ -172,6 +220,27 @@ function renderBasket() {
   }
   if (orderBtn) orderBtn.style.display = 'flex';
   if (clearBtn) clearBtn.style.display = 'block';
+  updateBasketBadge();
+}
+
+function changeBasketQuantity(index, delta) {
+  triggerHaptic();
+  if (basket[index]) {
+    let current = basket[index].kitobSoni || 1;
+    let newVal = current + delta;
+    if (newVal < 1) newVal = 1;
+    if (newVal > 1000) newVal = 1000;
+    basket[index].kitobSoni = newVal;
+    localStorage.setItem('calcBasket', JSON.stringify(basket));
+    renderBasket();
+  }
+}
+
+function removeFromBasket(index) {
+  basket.splice(index, 1);
+  localStorage.setItem('calcBasket', JSON.stringify(basket));
+  renderBasket();
+  updateBasketBadge();
 }
 
 let currentTelegramType = null;
@@ -229,7 +298,7 @@ function doSendBasketToTelegram(phone) {
     renderBasket();
     updateBasketBadge();
     doResetCalculator(false);
-    document.getElementById('basketModal').style.display = 'none';
+    navigateTo('calculator');
   }, 1000);
 }
 
@@ -252,14 +321,16 @@ function restoreFromHistory(index) {
   const ids = ['tarif', 'format', 'muqova', 'rang'];
   ids.forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.value = item[id];
-    
-    // UI (float-value) ni yangilash
-    const valEl = document.getElementById(id + 'Value');
-    if (valEl) valEl.textContent = item[id];
-    
-    const btn = document.getElementById(id + 'Btn');
-    if (btn) btn.classList.add('filled');
+    if (el) {
+      el.value = item[id];
+      
+      // UI (float-value) ni yangilash
+      const valEl = document.getElementById(id + 'Value');
+      if (valEl) valEl.textContent = item[id];
+      
+      const btn = document.getElementById(id + 'Btn');
+      if (btn) btn.classList.add('filled');
+    }
   });
 
   // 2. Sahifa va Kitob nomi
@@ -279,9 +350,12 @@ function restoreFromHistory(index) {
   if (qismDisplay) qismDisplay.textContent = item.qismSoni;
 
   // 4. Modalni yopish va narxni yangilash
-  closeHistoryModal();
-  updatePrice();
+  const historyModal = document.getElementById('historyModal');
+  if (historyModal) historyModal.style.display = 'none';
   
+  // Agar boshqa viewda bo'lsa (Savat yoki Kabinet), Kalkulyatorga qaytaramiz
+  navigateTo('calculator');
+  updatePrice();
   showToast("🔄 Hisob qayta yuklandi");
 }
 
@@ -822,10 +896,6 @@ function showHistoryModal() {
   }, 50);
 }
 
-function showModal(type) {
-  const modal = document.getElementById(type + 'Modal');
-  if (modal) modal.style.display = 'flex';
-}
 
 function selectOption(type, value) {
   triggerHaptic();
@@ -927,15 +997,23 @@ function cancelPhone() {
 }
 
 function executeTelegramSend(phone) {
-  if (currentTelegramType === 'basket') {
-    doSendBasketToTelegram(phone);
-  } else if (currentTelegramType === 'single') {
-    doSendToTelegram(phone);
-  }
-  currentTelegramType = null;
-  if (document.getElementById('promptPhone')) {
-    document.getElementById('promptPhone').value = "+998 ";
-  }
+  const btn = document.getElementById('basketOrderBtn');
+  if (btn) btn.classList.add('btn-loading');
+
+  setTimeout(() => {
+    if (currentTelegramType === 'basket') {
+      doSendBasketToTelegram(phone);
+    } else if (currentTelegramType === 'single') {
+      doSendToTelegram(phone);
+    }
+    currentTelegramType = null;
+    
+    if (btn) btn.classList.remove('btn-loading');
+    
+    if (document.getElementById('promptPhone')) {
+      document.getElementById('promptPhone').value = "+998 ";
+    }
+  }, 1200); // 1.2 soniya animatsiya uchun
 }
 
 function initPhoneInput(id) {
@@ -1010,12 +1088,17 @@ function renderProfile() {
     const initials = user.name.charAt(0).toUpperCase();
     container.innerHTML = `
       <div class="profile-card">
-        <div class="profile-avatar">${initials}</div>
-        <div class="profile-details">
-          <div class="profile-name">${user.name}</div>
-          <div class="profile-phone">${user.phone}</div>
-          <button class="profile-logout-btn" onclick="logoutProfile()">Chiqish 👋</button>
+        <div class="profile-main-row">
+          <div class="profile-avatar">${initials}</div>
+          <div class="profile-details">
+            <div class="profile-name">${user.name}</div>
+            <div class="profile-phone">${user.phone}</div>
+          </div>
+          <button class="profile-edit-trigger" onclick="editProfile()" title="Tahrirlash">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          </button>
         </div>
+        <button class="profile-logout-btn" onclick="logoutProfile()">Chiqish 👋</button>
       </div>
     `;
   } else {
@@ -1053,10 +1136,16 @@ function logoutProfile() {
   });
 }
 
-function closeModal(type) {
-  const modal = document.getElementById(type + 'Modal');
-  if (modal) modal.style.display = 'none';
+function editProfile() {
+  const user = JSON.parse(localStorage.getItem('fbookUser') || 'null');
+  if (user) {
+    document.getElementById('profileName').value = user.name;
+    document.getElementById('profilePhone').value = user.phone;
+    // navigateTo('calculator'); // Ixtiyoriy: Kabinetda turib tahrirlayverishi mumkin
+    showModal('profile');  // Haqiqiy modalni ochish
+  }
 }
+
 
 document.addEventListener('DOMContentLoaded', () => {
   // Restore Dark Mode

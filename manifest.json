@@ -1,0 +1,17 @@
+{
+  "name": "FbookMED Kalkulyator",
+  "short_name": "FbookMED",
+  "description": "Kitob chop etish narxlari kalkulyatori",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007acc",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3141/3141158.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
