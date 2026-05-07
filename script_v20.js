@@ -4,15 +4,152 @@ function triggerHaptic() {
   }
 }
 
+// Security & Utility
+function escapeHTML(str) {
+  if (typeof str !== 'string') return str;
+  return str.replace(/[&<>'"]/g, 
+    tag => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      "'": '&#39;',
+      '"': '&quot;'
+    }[tag])
+  );
+}
+
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+// --- Global O'zgaruvchilar va Xavfsiz Storage ---
+function getStorage(key, defaultVal = []) {
+  try {
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : defaultVal;
+  } catch (e) {
+    console.error("Storage error:", e);
+    return defaultVal;
+  }
+}
+
+function setStorage(key, val) {
+  try {
+    localStorage.setItem(key, JSON.stringify(val));
+  } catch (e) {
+    console.error("Storage save error:", e);
+  }
+}
+
+let basket = getStorage('calcBasket', []);
+let fbookProducts = [];
+
+// --- DATABASE CONFIGURATION ---
+const DATABASE_MODE = "firebase"; // "local", "firebase", "php"
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB7lFHADoRhwb3sZT0D3KtoXOdFcKYjZkM",
+  authDomain: "fbookmed-38285.firebaseapp.com",
+  databaseURL: "https://fbookmed-38285-default-rtdb.firebaseio.com",
+  projectId: "fbookmed-38285",
+  storageBucket: "fbookmed-38285.firebasestorage.app",
+  messagingSenderId: "594571267124",
+  appId: "1:594571267124:web:77be87a2654e8f146f0e61"
+};
+
+if (DATABASE_MODE === "firebase") {
+  if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+}
+
+const DataService = {
+  async fetchProducts() {
+    if (DATABASE_MODE === "firebase") {
+       try {
+           const snapshot = await firebase.database().ref('products').once('value');
+           const data = snapshot.val();
+           if (!data) return [];
+           return Object.keys(data).map(key => ({ ...data[key], id: key })).reverse();
+       } catch (e) { console.error(e); return []; }
+    }
+    if (DATABASE_MODE === "php") {
+       try {
+           const res = await fetch('backend/api.php');
+           return await res.json() || [];
+       } catch (e) { console.error(e); return []; }
+    }
+    // LocalStorage (default)
+    return getStorage('fbookProducts', []);
+  },
+  
+  async saveProduct(product) {
+    if (DATABASE_MODE === "firebase") {
+       const ref = firebase.database().ref('products');
+       if (product.id && typeof product.id === 'string' && product.id.startsWith('-')) {
+           await ref.child(product.id).update(product);
+       } else {
+           const pWithoutId = {...product};
+           delete pWithoutId.id;
+           await ref.push(pWithoutId);
+       }
+       return true;
+    }
+    if (DATABASE_MODE === "php") {
+       try {
+           await fetch('backend/api.php', {
+               method: 'POST',
+               headers: {'Content-Type': 'application/json'},
+               body: JSON.stringify(product)
+           });
+           return true;
+       } catch(e) { console.error(e); return false; }
+    }
+    // LocalStorage
+    let list = getStorage('fbookProducts', []);
+    if (product.id) {
+       const idx = list.findIndex(p => p.id == product.id);
+       if (idx !== -1) list[idx] = product;
+       else list.unshift({...product, id: Date.now()});
+    } else {
+       list.unshift({...product, id: Date.now()});
+    }
+    setStorage('fbookProducts', list);
+    return true;
+  },
+  
+  async deleteProduct(id) {
+    if (DATABASE_MODE === "firebase") {
+       await firebase.database().ref('products/' + id).remove();
+       return true;
+    }
+    if (DATABASE_MODE === "php") {
+       try {
+           await fetch('backend/api.php?id=' + id, { method: 'DELETE' });
+           return true;
+       } catch(e) { console.error(e); return false; }
+    }
+    // LocalStorage
+    let list = getStorage('fbookProducts', []);
+    list = list.filter(p => p.id != id);
+    setStorage('fbookProducts', list);
+    return true;
+  }
+};
+
 // Dark Mode logic
 function toggleDarkMode() {
   document.body.classList.toggle('dark');
   const isDark = document.body.classList.contains('dark');
   localStorage.setItem('darkMode', isDark);
-  
-  // Eski ikonka (agar HTMLda qolgan bo'lsa)
-  const oldIcon = document.getElementById('darkModeIcon');
-  if (oldIcon) oldIcon.textContent = isDark ? '☀️' : '🌙';
   
   // Menyu ichidagi ikonka
   const menuIcon = document.getElementById('darkModeIconMenu');
@@ -68,10 +205,12 @@ function navigateTo(viewId) {
   // View'ga mos mantiqiy funksiyalarni chaqirish
   if (viewId === 'basket') renderBasket();
   if (viewId === 'cabinet') renderProfile();
+  if (viewId === 'market') renderMarket();
+  if (viewId === 'admin') renderAdminProducts();
 }
 
 function saveToHistory(data) {
-  let history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
+  let history = getStorage('calcHistory', []);
 
   // Agar oxirgi yozuv bir xil tanlovlarga ega bo'lsa (faqat sahifa farq qilsa),
   // uni yangi qiymat bilan ALMASHTIR (yangi yozuv qo'shma)
@@ -85,14 +224,17 @@ function saveToHistory(data) {
     history[0] = { ...data, date: history[0].date }; // sanani saqlab qoldik
   } else {
     history.unshift({ ...data, date: new Date().toLocaleString() });
-    if (history.length > 5) history = history.slice(0, 5); // Faqat oxirgi 5 ta
+    if (history.length > 10) history = history.slice(0, 10); // Professional limit: 10 ta
   }
 
-  localStorage.setItem('calcHistory', JSON.stringify(history));
+  setStorage('calcHistory', history);
   renderHistory();
 }
 
-let basket = JSON.parse(localStorage.getItem('calcBasket') || '[]');
+// Debounced version of saveToHistory to optimize performance
+const debouncedSaveToHistory = debounce(saveToHistory, 800);
+
+// basket tepada init bo'ldi
 
 function updateBasketBadge() {
   const badgeNav = document.getElementById('navBasketBadge');
@@ -142,12 +284,6 @@ function addToBasket() {
   }
 }
 
-function removeFromBasket(id) {
-  basket = basket.filter(item => item.id !== id);
-  localStorage.setItem('calcBasket', JSON.stringify(basket));
-  renderBasket();
-  updateBasketBadge();
-}
 
 function clearFullBasket() {
   showConfirmModal("Savatdagi barcha kitoblarni o'chirib tashlaysizmi? <br><small style='font-size:12px;opacity:0.75;'>(Ushbu amalni ortga qaytarib bo'lmaydi)</small>", () => {
@@ -155,6 +291,7 @@ function clearFullBasket() {
     localStorage.removeItem('calcBasket');
     renderBasket();
     updateBasketBadge();
+    showToast("🗑 Savat bo'shatildi");
     navigateTo('calculator');
   });
 }
@@ -173,7 +310,13 @@ function renderBasket() {
   if (!container) return;
   
   if (basket.length === 0) {
-    container.innerHTML = '<div style="text-align:center;padding:20px;opacity:0.6;">Savat hozircha bo\'sh... 🛒</div>';
+    container.innerHTML = `
+      <div class="empty-state">
+        <span class="empty-state-icon">🛒</span>
+        <div style="font-weight:700; font-size:16px; margin-bottom:5px;">Savat hozircha bo'sh</div>
+        <div style="font-size:13px; opacity:0.6;">Tanlagan kitoblaringiz shu yerda ko'rinadi</div>
+      </div>
+    `;
     if (totalArea) totalArea.style.display = 'none';
     if (orderBtn) orderBtn.style.display = 'none';
     if (clearBtn) clearBtn.style.display = 'none';
@@ -183,18 +326,32 @@ function renderBasket() {
 
   container.innerHTML = '';
   let totalSum = 0;
+  const fragment = document.createDocumentFragment();
 
   basket.forEach((item, index) => {
-    // Har bir element uchun narxni hisoblash (item.price - string "123,000 so'm")
-    const priceNum = parseInt(item.price.replace(/[^0-9]/g, ''), 10);
     const itemQty = item.kitobSoni || 1;
-    const itemTotal = priceNum * itemQty;
+    let itemTotal = 0;
+    
+    if (item.totalPrice) {
+      itemTotal = item.totalPrice;
+    } else {
+      const priceNum = parseInt(String(item.price).replace(/[^0-9]/g, ''), 10);
+      itemTotal = priceNum;
+    }
+    
     totalSum += itemTotal;
 
-    const qismText = item.qismSoni > 1 ? ` (${item.qismSoni} qism)` : '';
     const indexBadge = `<span class="basket-item-index">${index + 1}</span>`;
-    const titleText = item.kitobNomi ? item.kitobNomi : `Kitob`;
-    const subtitleText = `${item.tarif}, ${item.format}, ${item.muqova}${qismText}, ${item.rang}, ${item.sahifa} bet`;
+    let titleText, subtitleText;
+
+    if (item.type === 'market') {
+      titleText = escapeHTML(item.kitobNomi);
+      subtitleText = escapeHTML(item.category || 'Tayyor mahsulot');
+    } else {
+      const qismText = item.qismSoni > 1 ? ` (${item.qismSoni} qism)` : '';
+      titleText = escapeHTML(item.kitobNomi ? item.kitobNomi : `Kitob`);
+      subtitleText = `${escapeHTML(item.tarif)}, ${escapeHTML(item.format)}, ${escapeHTML(item.muqova)}${qismText}, ${escapeHTML(item.rang)}, ${item.sahifa} bet`;
+    }
 
     const div = document.createElement('div');
     div.className = 'basket-item';
@@ -203,16 +360,20 @@ function renderBasket() {
         <span class="basket-item-title">${indexBadge} ${titleText}</span>
         <span class="basket-item-subtitle">${subtitleText}</span>
       </div>
-      <div class="basket-item-qty-controls">
-        <button class="qty-btn" onclick="changeBasketQuantity(${index}, -1)">-</button>
-        <span class="qty-value">${itemQty}</span>
-        <button class="qty-btn" onclick="changeBasketQuantity(${index}, 1)">+</button>
+      <div class="basket-item-actions">
+        <div class="basket-item-qty-controls">
+          <button class="qty-btn" onclick="changeBasketQuantity(${index}, -1)">-</button>
+          <span class="qty-value">${itemQty}</span>
+          <button class="qty-btn" onclick="changeBasketQuantity(${index}, 1)">+</button>
+        </div>
+        <div class="basket-item-price">${itemTotal.toLocaleString()} s.</div>
       </div>
-      <div class="basket-item-price">${itemTotal.toLocaleString()} s.</div>
       <button class="remove-basket-item" onclick="removeFromBasket(${index})" title="O'chirish">×</button>
     `;
-    container.appendChild(div);
+    fragment.appendChild(div);
   });
+  
+  container.appendChild(fragment);
 
   if (totalArea) {
     totalArea.style.display = 'flex';
@@ -231,6 +392,21 @@ function changeBasketQuantity(index, delta) {
     if (newVal < 1) newVal = 1;
     if (newVal > 1000) newVal = 1000;
     basket[index].kitobSoni = newVal;
+    
+    // Narxni qayta hisoblash
+    if (basket[index].unitPrice) {
+      basket[index].totalPrice = basket[index].unitPrice * newVal;
+      basket[index].price = basket[index].totalPrice.toLocaleString() + " so'm";
+    } else {
+      // Eski ma'lumotlar uchun
+      const oldQty = current;
+      const totalNum = parseInt(String(basket[index].price).replace(/[^0-9]/g, ''), 10);
+      const unit = Math.round(totalNum / oldQty);
+      basket[index].unitPrice = unit;
+      basket[index].totalPrice = unit * newVal;
+      basket[index].price = basket[index].totalPrice.toLocaleString() + " so'm";
+    }
+
     localStorage.setItem('calcBasket', JSON.stringify(basket));
     renderBasket();
   }
@@ -257,39 +433,55 @@ function sendBasketToTelegram() {
   }
 }
 
+// --- Telegram Message Builder ---
+const TelegramService = {
+  formatProductItem: function(item, index, itemQty, unitPrice, totalPrice) {
+    if (item.type === 'market') {
+      return `${index + 1}. *${escapeHTML(item.kitobNomi)}*\\n` +
+             `   🛒 Kategoriya: *${escapeHTML(item.category || '-')}*\\n` +
+             `   📦 Miqdor: *${itemQty} ta*\\n` +
+             `   💸 Narxi: ${unitPrice.toLocaleString()} * ${itemQty} = *${totalPrice.toLocaleString()} so'm*\\n\\n`;
+    } else {
+      const qismText = item.qismSoni > 1 ? ` (${item.qismSoni} qism)` : '';
+      const titleStr = item.kitobNomi ? `*${escapeHTML(item.kitobNomi)}*` : `*${index + 1}-Kitob*`;
+      return `${index + 1}. ${titleStr}\\n` +
+             `   ✨ Tarif: *${escapeHTML(item.tarif)}*\\n` +
+             `   📐 *${escapeHTML(item.format)}*, *${escapeHTML(item.muqova)}*${qismText}, *${escapeHTML(item.rang)}*\\n` +
+             `   📄 *${item.sahifa} bet*, *${itemQty} ta kitob*\\n` +
+             `   💸 Narxi: ${unitPrice.toLocaleString()} * ${itemQty} = *${totalPrice.toLocaleString()} so'm*\\n\\n`;
+    }
+  },
+  buildHeader: function(user, phone, title) {
+    let text = `📦 *${title}*\\n`;
+    if (user && user.name) text += `👤 Buyurtmachi: *${escapeHTML(user.name)}*\\n`;
+    if (phone && phone.trim() !== "") text += `📞 Aloqa: ${escapeHTML(phone.trim())}\\n`;
+    text += `\\n`;
+    return text;
+  },
+  send: function(text) {
+    const url = `https://t.me/FbookMED1?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+  }
+};
+
 function doSendBasketToTelegram(phone) {
   const user = JSON.parse(localStorage.getItem('fbookUser') || 'null');
-  let text = `📦 *YANGI SAVAT BUYURTMASI*\n`;
+  let text = TelegramService.buildHeader(user, phone, 'YANGI SAVAT BUYURTMASI');
   
-  if (user && user.name) {
-    text += `👤 Buyurtmachi: *${user.name}*\n`;
-  }
-  
-  if (phone && phone.trim() !== "") {
-    text += `📞 Aloqa: ${phone.trim()}\n`;
-  }
-  text += `\n`;
   let totalSum = 0;
-
   basket.forEach((item, index) => {
-    const priceNum = parseInt(item.price.replace(/[^0-9]/g, ''), 10);
-    totalSum += priceNum;
-
-    const qismText = item.qismSoni > 1 ? ` (${item.qismSoni} qism)` : '';
-    const titleStr = item.kitobNomi ? `*${item.kitobNomi}*` : `*${index + 1}-Kitob*`;
+    const itemQty = item.kitobSoni || 1;
+    const unitPrice = item.unitPrice || Math.round(parseInt(String(item.price).replace(/[^0-9]/g, ''), 10) / itemQty);
+    const totalPrice = unitPrice * itemQty;
+    totalSum += totalPrice;
     
-    text += `${index + 1}. ${titleStr}\n` +
-            `   ✨ Tarif: *${item.tarif}*\n` +
-            `   📐 *${item.format}*, *${item.muqova}*${qismText}, *${item.rang}*\n` +
-            `   📄 *${item.sahifa} bet*, *${item.kitobSoni} ta kitob*\n` +
-            `   💸 Narxi: *${item.price}*\n\n`;
+    text += TelegramService.formatProductItem(item, index, itemQty, unitPrice, totalPrice);
   });
 
-  text += `-------------------------\n` +
+  text += `-------------------------\\n` +
           `💰 *JAMI: ${totalSum.toLocaleString()} so'm*`;
 
-  const url = `https://t.me/FbookMED1?text=${encodeURIComponent(text)}`;
-  window.open(url, '_blank');
+  TelegramService.send(text);
 
   // Savat va formani tozalash
   setTimeout(() => {
@@ -359,6 +551,31 @@ function restoreFromHistory(index) {
   showToast("🔄 Hisob qayta yuklandi");
 }
 
+function addFromHistoryToBasket(index) {
+  const history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
+  const item = history[index];
+  if (!item) return;
+
+  triggerHaptic();
+  
+  // Savat ob'yekti yaratish (Tarixdagi ma'lumotlar asosida)
+  const basketItem = { ...item, id: Date.now() };
+  basket.push(basketItem);
+  localStorage.setItem('calcBasket', JSON.stringify(basket));
+  
+  updateBasketBadge();
+  showToast("✅ Savatga qayta qo'shildi!");
+  closeHistoryModal();
+}
+
+function removeFromHistory(index) {
+  const history = getStorage('calcHistory', []);
+  history.splice(index, 1);
+  setStorage('calcHistory', history);
+  renderHistory();
+  showToast("🗑 Tarixdan o'chirildi");
+}
+
 function renderHistory() {
   const container = document.getElementById('historyItems');
   const clearBtn = document.getElementById('clearHistoryBtn');
@@ -380,8 +597,8 @@ function renderHistory() {
     div.className = 'history-item';
     
     const qism = item.qismSoni > 1 ? `, ${item.qismSoni} qism` : '';
-    const titleText = item.kitobNomi ? item.kitobNomi : `${item.format} Kitob`;
-    const subtitleText = `${item.tarif}, ${item.muqova}, ${item.rang}, ${item.sahifa} bet${qism}`;
+    const titleText = item.kitobNomi ? item.kitobNomi : `${index + 1}-Kitob`;
+    const subtitleText = `${item.tarif}, ${item.format}, ${item.muqova}, ${item.rang}, ${item.sahifa} bet${qism}`;
 
     div.innerHTML = `
       <div class="history-info">
@@ -390,9 +607,17 @@ function renderHistory() {
       </div>
       <div class="history-actions">
         <div class="history-price">${item.price}</div>
-        <button class="restore-history-btn" onclick="restoreFromHistory(${index})" title="Qayta yuklash">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
-        </button>
+        <div class="history-btns-row">
+          <button class="restore-history-btn" onclick="restoreFromHistory(${index})" title="Qayta yuklash">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+          </button>
+          <button class="add-again-history-btn" onclick="addFromHistoryToBasket(${index})" title="Savatga qo'shish">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <button class="remove-history-btn" onclick="removeFromHistory(${index})" title="O'chirish">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+          </button>
+        </div>
       </div>
     `;
     container.appendChild(div);
@@ -504,7 +729,8 @@ function korsatmaChiqar() {
 function yaxlit1000(n) {
   const rem = n % 1000;
   if (rem === 0) return n;
-  return rem > 550 ? (n + (1000 - rem)) : (n - rem);
+  // Agar qoldiq 500 dan katta yoki teng bo'lsa, yuqoriga, aks holda pastga yaxlitlaymiz
+  return rem >= 500 ? (n + (1000 - rem)) : (n - rem);
 }
 
 // Kitob soni +/- tugmalari
@@ -515,7 +741,7 @@ function changeKitobSoni(delta) {
   val = Math.max(1, Math.min(9999, val + delta));
   input.value = val;
   const result = updatePrice();
-  if (result) saveToHistory(result);
+  if (result) debouncedSaveToHistory(result);
 }
 
 // Qism Dropdown-ni ochish/yopish
@@ -537,7 +763,7 @@ function setQismSoni(n) {
   if (dropdown) dropdown.classList.remove('show');
   
   const result = updatePrice();
-  if (result) saveToHistory(result);
+  if (result) debouncedSaveToHistory(result);
 }
 
 // Tashqariga bosilganda dropdown-ni yopish
@@ -576,7 +802,15 @@ function setBanner(state, valueText, hintText, formulaText, perText) {
   if (perEl) perEl.textContent = perText || '';
 
   banner.classList.remove('success');
-  if (!state && valueText !== '—') banner.classList.add('success');
+  if (!state && valueText !== '—') {
+     banner.classList.add('success');
+     // Success flash effect
+     const vEl = document.getElementById('priceValue');
+     if (vEl) {
+       vEl.style.transform = 'scale(1.1)';
+       setTimeout(() => { vEl.style.transform = 'scale(1)'; }, 200);
+     }
+  }
 
   banner.style.animation = 'none';
   void banner.offsetWidth;
@@ -612,24 +846,39 @@ function animateNumber(element, target) {
 }
 
 function isCalculatorDirty() {
-  const ids = ['tarif', 'format', 'muqova', 'rang'];
+  const ids = ['format', 'muqova', 'rang'];
   for (let id of ids) {
     const el = document.getElementById(id);
     if (el && el.value !== "") return true;
   }
+  
+  const tarif = document.getElementById('tarif');
+  if (tarif && tarif.value !== "" && tarif.value !== "Standart") return true;
+
   const sahifa = document.getElementById('sahifa');
   if (sahifa && sahifa.value !== "") return true;
 
   const kitobNomi = document.getElementById('kitobNomi');
   if (kitobNomi && kitobNomi.value !== "") return true;
 
-  const kitobSoni = document.getElementById('kitobSoni');
-  if (kitobSoni && kitobSoni.value !== "1") return true;
+  const kitobSoniInput = document.getElementById('kitobSoni');
+  if (kitobSoniInput && kitobSoniInput.value !== "1") return true;
 
   const qismSoni = document.getElementById('qismSoniHidden');
   if (qismSoni && qismSoni.value !== "1") return true;
 
   return false;
+}
+
+function toggleClearBtnState() {
+  const btn = document.querySelector('.clear-btn');
+  if (!btn) return;
+  const isDirty = isCalculatorDirty();
+  if (isDirty) {
+    btn.classList.remove('disabled');
+  } else {
+    btn.classList.add('disabled');
+  }
 }
 
 function resetCalculator() {
@@ -670,6 +919,10 @@ function doResetCalculator(showToastFlag = true) {
     const valEl = document.getElementById(id + 'Value');
     if (btn) btn.classList.remove('filled');
     if (valEl) valEl.textContent = "";
+    
+    // Wrapperlarni ham tozalash (aynan Muqova uchun)
+    const wrapper = document.getElementById(id + 'Wrapper');
+    if (wrapper) wrapper.classList.remove('filled');
   });
 
   const sahifa = document.getElementById('sahifa');
@@ -723,28 +976,17 @@ function doSendToTelegram(phone) {
   const res = updatePrice();
   const user = JSON.parse(localStorage.getItem('fbookUser') || 'null');
   
-  let text = `🚀 *YANGI BUYURTMA*\n`;
+  let text = TelegramService.buildHeader(user, phone, 'YANGI BUYURTMA');
   
-  if (user && user.name) {
-    text += `👤 Buyurtmachi: *${user.name}*\n`;
-  }
-
-  if (phone && phone.trim() !== "") {
-    text += `📞 Aloqa: ${phone.trim()}\n`;
-  }
+  const itemQty = res.kitobSoni || 1;
+  const unitPrice = res.unitPrice || Math.round(res.totalPrice / itemQty);
   
-  const titleStr = res.kitobNomi ? `*${res.kitobNomi}*` : `*1-Kitob*`;
-  const qismText = res.qismSoni > 1 ? ` (${res.qismSoni} qism)` : '';
+  text += TelegramService.formatProductItem(res, 0, itemQty, unitPrice, res.totalPrice);
+  
+  // Custom single total output
+  text += `-------------------------\\n💰 *JAMI: ${res.totalPrice.toLocaleString()} so'm*`;
 
-  text += `\n` +
-          `📦 ${titleStr}\n` +
-          `✨ Tarif: *${res.tarif}*\n` +
-          `📐 *${res.format}*, *${res.muqova}*${qismText}, *${res.rang}*\n` +
-          `📄 *${res.sahifa} bet*, *${res.kitobSoni} ta kitob*\n\n` +
-          `💰 *JAMI: ${res.price}*`;
-
-  const url = `https://t.me/FbookMED1?text=${encodeURIComponent(text)}`;
-  window.open(url, '_blank');
+  TelegramService.send(text);
 
   // Avtomatik tozalash (Buyurtma bergandan so'ng)
   setTimeout(() => {
@@ -769,12 +1011,18 @@ function updatePrice() {
     sahifaInput.value = sahifaInput.value.replace(/[^0-9]/g, '');
   }
 
-  let sahifa = parseInt(sahifaInput ? sahifaInput.value : 0, 10);
+  let sahifaValue = parseInt(sahifaInput ? sahifaInput.value : 0, 10);
+  if (isNaN(sahifaValue) || sahifaValue < 1) sahifaValue = 0;
+  let sahifa = sahifaValue;
+
   if (sahifa > 10000) {
     sahifa = 10000;
     if (sahifaInput) sahifaInput.value = "10000";
   }
-  const kitobSoni = parseInt(kitobSoniInput ? kitobSoniInput.value : 1, 10) || 1;
+
+  let ksValue = parseInt(kitobSoniInput ? kitobSoniInput.value : 1, 10);
+  if (isNaN(ksValue) || ksValue < 1) ksValue = 1;
+  const kitobSoni = ksValue;
 
   const qismArea = document.querySelector('.qism-select-area');
   if (qismArea) {
@@ -871,7 +1119,8 @@ function updatePrice() {
   }
 
   validateForm();
-  return { tarif, format, muqova, rang, sahifa, kitobSoni, qismSoni, price: priceStr, kitobNomi };
+  toggleClearBtnState();
+  return { tarif, format, muqova, rang, sahifa, kitobSoni, qismSoni, price: priceStr, unitPrice: bittaYaxlit, totalPrice: jamiYaxlit, kitobNomi };
 }
 
 function closeHistoryModal() {
@@ -904,8 +1153,27 @@ function selectOption(type, value) {
 
   const btn = document.getElementById(type + 'Btn');
   const valueEl = document.getElementById(type + 'Value');
+  
+  if (btn) {
+    btn.classList.add('filled');
+    // Premium pulse effect
+    btn.classList.remove('pulse-on-select');
+    void btn.offsetWidth; // trigger reflow
+    btn.classList.add('pulse-on-select');
+    
+    // Muqova uchun xususan: wrapperga ham pulse beramiz
+    if (type === 'muqova') {
+      const wrapper = document.getElementById('muqovaWrapper');
+      if (wrapper) {
+        wrapper.classList.add('filled');
+        wrapper.classList.remove('pulse-on-select');
+        void wrapper.offsetWidth;
+        wrapper.classList.add('pulse-on-select');
+      }
+    }
+  }
+  
   if (valueEl) valueEl.textContent = value;
-  if (btn) btn.classList.add('filled');
 
   const modal = document.getElementById(type + 'Modal');
   if (modal) modal.style.display = 'none';
@@ -930,30 +1198,33 @@ async function saveAsImage() {
   try {
     const canvas = await html2canvas(area, {
       scale: 2,
-      backgroundColor: getComputedStyle(document.body).backgroundColor,
-      useCORS: true
+      backgroundColor: "#f4f7f9",
+      useCORS: true,
+      logging: false
     });
+    
     const link = document.createElement('a');
     link.download = `FbookMED_Hisob_${new Date().getTime()}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
     
     // Success feedback
-    btn.innerHTML = '✅ Rasm saqlandi';
-    btn.style.background = 'linear-gradient(135deg, #2e7d32, #4caf50)';
+    showToast('✅ Rasm muvaffaqiyatli saqlandi!');
+    btn.innerHTML = '✅ Saqlandi';
+    btn.classList.add('btn-success');
     setTimeout(() => {
       btn.innerHTML = '📸 Rasm';
-      btn.style.background = '';
+      btn.classList.remove('btn-success');
     }, 2000);
   } catch (err) {
     console.error('Snapshot error:', err);
-    showAlert('Rasmni saqlashda xatolik yuz berdi.');
+    showToast('❌ Rasmni saqlashda xatolik!');
     btn.innerHTML = '📸 Rasm';
   }
 }
 
 window.onclick = function(event) {
-  ['tarif','format','muqova','rang','confirm','phone','alert'].forEach(type => {
+  ['tarif','format','muqova','rang','confirm','phone','alert','address'].forEach(type => {
     const modal = document.getElementById(type + 'Modal');
     if (modal && event.target === modal) modal.style.display = 'none';
   });
@@ -974,7 +1245,15 @@ function showAlert(message) {
   const textEl = document.getElementById('alertText');
   if (textEl) textEl.textContent = message;
   const modal = document.getElementById('alertModal');
-  if (modal) modal.style.display = 'flex';
+  if (modal) {
+    modal.style.display = 'flex';
+    const content = modal.querySelector('.modal-content');
+    if (content) {
+      content.classList.remove('shake-error');
+      void content.offsetWidth;
+      content.classList.add('shake-error');
+    }
+  }
 }
 
 function closeAlert() {
@@ -1148,13 +1427,18 @@ function editProfile() {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Restore Dark Mode
   if (localStorage.getItem('darkMode') === 'true') {
     document.body.classList.add('dark');
-    const oldIcon = document.getElementById('darkModeIcon');
-    if (oldIcon) oldIcon.textContent = '☀️';
     const menuIcon = document.getElementById('darkModeIconMenu');
     if (menuIcon) menuIcon.textContent = '☀️';
+  }
+
+  // Service Worker Registration
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .catch(err => { /* SW failed */ });
+    });
   }
 
   korsatmaChiqar();
@@ -1186,13 +1470,29 @@ document.addEventListener('DOMContentLoaded', () => {
   let historyTimer = null;
   if (sahifaEl) {
     sahifaEl.addEventListener('input', () => {
-      updatePrice(); // Narxni darhol yangilaydi
-      // Tarixni esa 800ms kutib saqlaydi
+      updatePrice();
       clearTimeout(historyTimer);
       historyTimer = setTimeout(() => {
         const result = updatePrice();
         if (result) saveToHistory(result);
       }, 800);
+    });
+    // Auto-fix empty or 0 on blur
+    sahifaEl.addEventListener('blur', () => {
+      if (sahifaEl.value === "" || parseInt(sahifaEl.value) < 1) {
+        // if empty user might still be thinking, but let's keep it healthy
+      }
+      updatePrice();
+    });
+  }
+
+  const ksInputEl = document.getElementById('kitobSoni');
+  if (ksInputEl) {
+    ksInputEl.addEventListener('blur', () => {
+      if (ksInputEl.value === "" || parseInt(ksInputEl.value) < 1) {
+        ksInputEl.value = "1";
+        updatePrice();
+      }
     });
   }
 
@@ -1204,6 +1504,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  const knEl = document.getElementById('kitobNomi');
+  if (knEl) {
+    knEl.addEventListener('input', () => {
+      clearTimeout(historyTimer);
+      historyTimer = setTimeout(() => {
+        const result = updatePrice();
+        if (result) saveToHistory(result);
+      }, 1000);
+    });
+  }
+
   // Oxirgi hisoblar modal: overlay div ga click qo'shish
   const histOverlay = document.querySelector('#historyModal .modal-overlay');
   if (histOverlay) {
@@ -1213,6 +1524,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   updatePrice();
+  toggleClearBtnState();
 });
 
 const messages = [
@@ -1239,7 +1551,7 @@ function rotateScrollingText() {
   }
   oldElem.replaceWith(newElem);
 }
-setInterval(rotateScrollingText, 10000);
+setInterval(rotateScrollingText, 20000);
 
 function showToast(message, duration = 2500) {
   const container = document.getElementById('toastContainer');
@@ -1260,3 +1572,259 @@ function showToast(message, duration = 2500) {
     }, 300);
   }, duration);
 }
+
+// ==========================================
+// Admin Panel Functions
+// ==========================================
+function checkAdminPassword() {
+  const pwd = document.getElementById('adminPassword').value;
+  if (pwd === 'fbook2026') {
+    document.getElementById('adminPassword').value = '';
+    closeModal('adminAuth');
+    navigateTo('admin');
+  } else {
+    showAlert("Parol noto'g'ri!");
+  }
+}
+
+document.getElementById('adminProdFile')?.addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      document.getElementById('adminProdFile').setAttribute('data-base64', evt.target.result);
+    };
+    reader.readAsDataURL(file);
+  } else {
+    document.getElementById('adminProdFile').removeAttribute('data-base64');
+  }
+});
+
+function getProductImage() {
+  const fileInput = document.getElementById('adminProdFile');
+  const linkInput = document.getElementById('adminProdLink');
+  
+  if (fileInput && fileInput.getAttribute('data-base64')) {
+    return fileInput.getAttribute('data-base64');
+  }
+  if (linkInput && linkInput.value.trim() !== '') {
+    return linkInput.value.trim();
+  }
+  return 'logo.png';
+}
+
+async function saveAdminProduct() {
+  const name = document.getElementById('adminProdName').value.trim();
+  const price = document.getElementById('adminProdPrice').value.trim();
+  const category = document.getElementById('adminProdCategory').value.trim();
+  const desc = document.getElementById('adminProdDesc').value.trim();
+  const editId = document.getElementById('adminEditId').value;
+  
+  if (!name || !price || !category) {
+    showAlert("Iltimos, nom, narx va kategoriyani kiriting!");
+    return;
+  }
+  
+  document.getElementById('adminProdName').disabled = true; // Qotib turish uchun
+  
+  const imgUrl = getProductImage();
+  const prodObj = {
+    id: editId || null,
+    name: name,
+    price: parseInt(price),
+    category: category,
+    desc: desc,
+    image: imgUrl
+  };
+  
+  await DataService.saveProduct(prodObj);
+  fbookProducts = await DataService.fetchProducts(); // yangilaymiz
+  
+  document.getElementById('adminProdName').disabled = false;
+  
+  resetAdminForm();
+  renderAdminProducts();
+  showToast("✅ Mahsulot saqlandi!");
+}
+
+function resetAdminForm() {
+  if(document.getElementById('adminProdName')) {
+    document.getElementById('adminProdName').value = '';
+    document.getElementById('adminProdPrice').value = '';
+    document.getElementById('adminProdCategory').value = 'Kitoblar';
+    document.getElementById('adminProdDesc').value = '';
+    document.getElementById('adminProdLink').value = '';
+    const fileInput = document.getElementById('adminProdFile');
+    if (fileInput) {
+      fileInput.value = '';
+      fileInput.removeAttribute('data-base64');
+    }
+    document.getElementById('adminEditId').value = '';
+  }
+}
+
+function deleteAdminProduct(id) {
+  showConfirmModal("Buni haqiqatan o'chirmoqchimisiz?", async () => {
+    await DataService.deleteProduct(id);
+    fbookProducts = await DataService.fetchProducts();
+    renderAdminProducts();
+    showToast("🗑 Mahsulot o'chirildi");
+  });
+}
+
+function editAdminProduct(id) {
+  const prod = fbookProducts.find(p => p.id === id);
+  if (prod) {
+    document.getElementById('adminProdName').value = prod.name;
+    document.getElementById('adminProdPrice').value = prod.price;
+    document.getElementById('adminProdCategory').value = prod.category || 'Kitoblar';
+    document.getElementById('adminProdDesc').value = prod.desc || '';
+    document.getElementById('adminEditId').value = prod.id;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function renderAdminProducts() {
+  const container = document.getElementById('adminProductsContainer');
+  const countSpan = document.getElementById('adminProdCount');
+  if (!container) return;
+  
+  countSpan.textContent = fbookProducts.length;
+  container.innerHTML = '';
+  
+  if (fbookProducts.length === 0) {
+    container.innerHTML = '<div style="text-align:center; padding:15px; opacity:0.6;">Hozircha mahsulot yo\'q</div>';
+    return;
+  }
+  
+  const fragment = document.createDocumentFragment();
+  fbookProducts.forEach(prod => {
+    const div = document.createElement('div');
+    div.className = 'admin-list-item';
+    div.innerHTML = `
+      <img src="${escapeHTML(prod.image)}" alt="img" />
+      <div class="admin-list-info">
+        <div class="admin-list-title">${escapeHTML(prod.name)}</div>
+        <div class="admin-list-price">${prod.price.toLocaleString()} so'm</div>
+      </div>
+      <div class="admin-list-actions">
+        <button onclick="editAdminProduct(${prod.id})">✏️</button>
+        <button class="del-btn" onclick="deleteAdminProduct(${prod.id})">🗑</button>
+      </div>
+    `;
+    fragment.appendChild(div);
+  });
+  
+  container.appendChild(fragment);
+}
+
+// ==========================================
+// Market View Functions
+// ==========================================
+function renderMarket() {
+  const grid = document.getElementById('marketGrid');
+  if (!grid) return;
+  
+  grid.innerHTML = '';
+  if (fbookProducts.length === 0) {
+    grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px 20px; opacity:0.7;">Market vaqtinchalik bo\'sh. Kuting, tovarlar qo\'shiladi.</div>';
+    return;
+  }
+  
+  const fragment = document.createDocumentFragment();
+  fbookProducts.forEach(prod => {
+    const div = document.createElement('div');
+    div.className = 'market-card';
+    div.innerHTML = `
+      <div class="market-img-wrap" onclick="showProductDetails(${prod.id})">
+        <img src="${escapeHTML(prod.image)}" alt="Img" loading="lazy" />
+      </div>
+      <div class="market-cat">${escapeHTML(prod.category || 'Kategoriya')}</div>
+      <div class="market-title">${escapeHTML(prod.name)}</div>
+      <div class="market-price">${prod.price.toLocaleString()} s.</div>
+      <button class="btn-add-tomarket" onclick="addToBasketFromMarket(${prod.id}, event)">Savatchaga</button>
+    `;
+    fragment.appendChild(div);
+  });
+  
+  grid.appendChild(fragment);
+}
+
+function showProductDetails(id) {
+  const prod = fbookProducts.find(p => p.id === id);
+  if (!prod) return;
+  
+  document.getElementById('productModalImg').src = prod.image;
+  document.getElementById('productModalTitle').textContent = prod.name;
+  document.getElementById('productModalCategory').textContent = prod.category || 'Kategoriya';
+  document.getElementById('productModalPrice').textContent = prod.price.toLocaleString() + " so'm";
+  document.getElementById('productModalDesc').innerHTML = escapeHTML(prod.desc || 'Tavsif kiritilmagan.').replace(/\\n/g, '<br>');
+  
+  const addBtn = document.getElementById('productModalAddBtn');
+  addBtn.onclick = () => {
+    addToBasketFromMarket(id);
+    closeModal('product');
+  };
+  
+  showModal('product');
+}
+
+function addToBasketFromMarket(id, event) {
+  if (event) event.stopPropagation();
+  triggerHaptic();
+  
+  const prod = fbookProducts.find(p => p.id === id);
+  if (!prod) return;
+  
+  const existing = basket.find(b => b.type === 'market' && b.prodId === id);
+  if (existing) {
+    existing.kitobSoni += 1;
+    existing.totalPrice = existing.unitPrice * existing.kitobSoni;
+  } else {
+    basket.push({
+      id: Date.now(),
+      type: 'market',
+      prodId: id,
+      kitobNomi: prod.name,
+      category: prod.category || 'Katalog',
+      kitobSoni: 1,
+      unitPrice: prod.price,
+      totalPrice: prod.price,
+      price: prod.price.toLocaleString() + " so'm"
+    });
+  }
+  
+  setStorage('calcBasket', basket);
+  updateBasketBadge();
+  showToast("✅ Savatga qo'shildi!");
+  
+  if (event && event.target) {
+    const btn = event.target;
+    btn.classList.add('added');
+    const oldHtml = btn.innerHTML;
+    btn.innerHTML = '✅ Labbay!';
+    setTimeout(() => {
+      btn.classList.remove('added');
+      btn.innerHTML = oldHtml;
+    }, 1500);
+  }
+}
+
+// Initial render Market on load
+async function loadInitialData() {
+  try {
+    fbookProducts = await DataService.fetchProducts();
+  } catch (err) {
+    console.error("Failed to fetch products:", err);
+    fbookProducts = [];
+  }
+  renderMarket();
+  const adminViewMatch = document.getElementById('adminProductsContainer');
+  if (adminViewMatch) {
+     renderAdminProducts();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadInitialData();
+});

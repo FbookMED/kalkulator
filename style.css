@@ -1,23 +1,36 @@
 :root {
-  --primary-color: #007acc;
+  --primary-color: #0076ff;
+  --primary-gradient: linear-gradient(135deg, #0076ff 0%, #00c6ff 100%);
   --hover-color: #005f99;
-  --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  --glass-bg: rgba(255, 255, 255, 0.75);
-  --glass-border: rgba(200, 220, 240, 0.5);
-  --bg-gradient: linear-gradient(135deg, #e8f4fd 0%, #d0e8f8 100%);
-  --text-color: #333;
-  --input-bg: #fff;
-  --subtext-color: #666;
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.12);
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --inner-glow: inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  --bg-gradient: linear-gradient(135deg, #f0f7ff 0%, #e1eefc 100%);
+  --text-color: #1d1d1f;
+  --input-bg: rgba(255, 255, 255, 0.9);
+  --subtext-color: #86868b;
+  --glow-1: rgba(0, 118, 255, 0.15);
+  --glow-2: rgba(0, 198, 255, 0.1);
+  --glow-3: rgba(125, 0, 255, 0.05);
 }
 
 body.dark {
-  --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  --glass-bg: rgba(255, 255, 255, 0.05);
+  --primary-color: #0a84ff;
+  --primary-gradient: linear-gradient(135deg, #0a84ff 0%, #4096ff 100%);
+  --bg-gradient: linear-gradient(135deg, #000000 0%, #1c1c1e 100%);
+  --glass-bg: rgba(28, 28, 30, 0.75);
   --glass-border: rgba(255, 255, 255, 0.1);
-  --text-color: #e0e0e0;
-  --input-bg: #2a2a3e;
-  --subtext-color: #aaa;
-  --shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --inner-glow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  --text-color: #f5f5f7;
+  --input-bg: rgba(44, 44, 46, 0.8);
+  --subtext-color: #a1a1a6;
+  --shadow-lg: 0 25px 60px rgba(0, 0, 0, 0.4);
+  --glow-1: rgba(10, 132, 255, 0.12);
+  --glow-2: rgba(64, 150, 255, 0.08);
+  --glow-3: rgba(191, 90, 242, 0.06);
 }
 
 * {
@@ -46,12 +59,12 @@ body {
   width: 100%;
   z-index: 2500;
   background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1.5px solid var(--glass-border);
-  padding: 12px 16px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: var(--inner-glow), 0 4px 20px rgba(0,0,0,0.04);
+  padding: 14px 20px;
+  margin-bottom: 25px;
 }
 
 @media (max-width: 560px) {
@@ -123,8 +136,6 @@ body {
 }
 .menu-wrapper { position: relative; }
 
-/* Menu Dropdown - ENDI KERAK EMAS (Modalga ko'chdi) */
-.menu-dropdown { display: none !important; }
 
 .menu-header {
   font-size: 11px;
@@ -135,21 +146,39 @@ body {
   letter-spacing: 1px;
 }
 .menu-item {
-  width: 100% !important;
-  background: transparent !important;
-  color: var(--text-color) !important;
-  text-align: left !important;
-  padding: 12px 14px !important;
-  border-radius: 12px !important;
-  font-weight: 600 !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 10px !important;
-  margin-top: 0 !important;
+  width: 100%;
+  background: var(--input-bg);
+  color: var(--text-color);
+  text-align: left;
+  padding: 18px 20px;
+  border-radius: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 14px;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-sm), var(--inner-glow);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+.menu-item::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+.menu-item:hover::after {
+  transform: translateX(100%);
 }
 .menu-item:hover {
-  background: rgba(0, 122, 204, 0.08) !important;
-  color: var(--primary-color) !important;
+  transform: translateY(-3px) scale(1.01) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 12px 25px rgba(0, 118, 255, 0.12) !important;
+  background: rgba(0, 118, 255, 0.03) !important;
 }
 
 /* Profile Section in Menu */
@@ -159,13 +188,24 @@ body {
   margin-bottom: 10px;
 }
 .profile-card {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 15px !important;
-  background: rgba(0, 122, 204, 0.05);
-  padding: 16px !important;
-  border-radius: 20px !important;
-  border: 1px solid var(--glass-border);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 20px;
+  border-radius: 28px;
+  border: 1.5px solid var(--glass-border);
+  box-shadow: var(--shadow-md), var(--inner-glow);
+  transition: all 0.3s ease;
+}
+body.dark .profile-card {
+  background: rgba(44, 44, 46, 0.35) !important;
+}
+.profile-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg), var(--inner-glow) !important;
 }
 
 .profile-main-row {
@@ -235,41 +275,53 @@ body {
 }
 
 .profile-logout-btn {
-  margin-top: 5px !important;
+  margin-top: 15px !important;
   width: 100% !important;
-  padding: 10px !important;
-  background: rgba(255, 82, 82, 0.1) !important;
-  color: #ff5252 !important;
-  border: 1.5px solid rgba(255, 82, 82, 0.15) !important;
-  border-radius: 12px !important;
+  padding: 16px !important;
+  background: rgba(255, 59, 48, 0.06) !important;
+  color: #ff3b30 !important;
+  border: 1.5px solid rgba(255, 59, 48, 0.15) !important;
+  border-radius: 20px !important;
   font-weight: 800 !important;
-  font-size: 12px !important;
+  font-size: 13px !important;
   text-transform: uppercase !important;
   cursor: pointer !important;
-  letter-spacing: 0.8px !important;
+  letter-spacing: 1.2px !important;
+  transition: all 0.3s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
 }
 
 .profile-logout-btn:hover {
-  background: #ff5252 !important;
+  background: #ff3b30 !important;
   color: white !important;
-  border-color: #ff5252 !important;
+  border-color: #ff3b30 !important;
+  box-shadow: 0 10px 25px rgba(255, 59, 48, 0.35) !important;
+  transform: translateY(-2px);
 }
 
 .login-prompt-btn {
   width: 100% !important;
-  padding: 14px !important;
-  background: var(--primary-color) !important;
+  padding: 16px !important;
+  background: var(--primary-gradient) !important;
   color: white !important;
   font-weight: 800 !important;
-  border-radius: 14px !important;
+  border-radius: 20px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 10px !important;
-  margin-top: 0 !important;
-  box-shadow: 0 4px 12px rgba(0, 122, 204, 0.2);
+  gap: 12px !important;
+  margin-top: 5px !important;
+  border: none !important;
+  box-shadow: 0 10px 25px rgba(0, 118, 255, 0.3) !important;
+  transition: all 0.3s ease !important;
 }
-.login-prompt-btn:hover { transform: translateY(-2px); }
+.login-prompt-btn:hover { 
+  transform: translateY(-3px) scale(1.02); 
+  box-shadow: 0 15px 35px rgba(0, 118, 255, 0.4) !important;
+}
 
 /* Profile Form */
 .profile-form {
@@ -418,20 +470,24 @@ body {
   .nav-logo { font-size: 18px; }
 }
 
-/* Eski Tugmalarni olib tashlash (Dark mode toggle endi kerak emas) */
-.dark-mode-toggle { display: none !important; }
 
 /* Glass Card Container */
 .container {
-  background: var(--glass-bg);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: rgba(255, 255, 255, 0.65); /* Doiralar ko'rinishi uchun biroz shaffofroq */
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
   border: 1px solid var(--glass-border);
-  border-radius: 24px;
-  padding: 28px 24px;
-  box-shadow: var(--shadow);
+  box-shadow: var(--inner-glow), var(--shadow-lg);
+  border-radius: 32px;
+  padding: 32px 28px;
   margin-top: 10px;
-  transition: background 0.4s ease, border-color 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+body.dark .container {
+  background: rgba(28, 28, 30, 0.6);
 }
 
 /* Banner */
@@ -488,7 +544,7 @@ body {
   font-style: italic;
   white-space: nowrap;
   display: inline-block;
-  animation: scroll-left 10s linear 1;
+  animation: scroll-left 20s linear 1;
   padding-left: 100%;
 }
 .scrolling-text.telegram { color: #ffe600; }
@@ -641,26 +697,26 @@ input[type="number"]:focus {
   text-overflow: ellipsis;
   transition: opacity 0.18s ease;
 }
-.float-btn.filled { 
-  border-color: var(--primary-color);
-  background: rgba(0, 122, 204, 0.05);
-  box-shadow: 0 4px 15px rgba(0, 122, 204, 0.1);
+.float-btn.filled, .muqova-wrapper.filled { 
+  border-color: var(--primary-color) !important;
+  background: rgba(0, 118, 255, 0.07) !important;
+  box-shadow: 0 0 20px rgba(0, 118, 255, 0.25) !important;
 }
-.float-btn.filled .float-label {
+.float-btn.filled .float-label, .muqova-wrapper.filled .float-label {
   top: 10px;
   transform: none;
   font-size: 11px;
   color: var(--primary-color);
   left: 48px;
 }
-.float-btn.filled .btn-icon {
+.float-btn.filled .btn-icon, .muqova-wrapper.filled .btn-icon {
   font-size: 16px;
   top: 14px;
   transform: none;
 }
-.float-btn.filled .float-value { opacity: 1; }
+.float-btn.filled .float-value, .muqova-wrapper.filled .float-value { opacity: 1; }
 .float-btn:focus-visible {
-  outline: 3px solid rgba(0,122,204,0.28);
+  outline: 3px solid rgba(0, 118, 255, 0.28);
   outline-offset: 2px;
 }
 .float-btn .help {
@@ -756,19 +812,29 @@ input[type="number"]:focus {
 }
 
 .price-banner {
-  margin-top: 20px;
-  padding: 18px 20px;
-  border-radius: 18px;
-  background: linear-gradient(135deg, #007acc, #00c6ff);
+  margin-top: 25px;
+  padding: 22px 24px;
+  border-radius: 24px;
+  background: var(--primary-gradient);
   color: #fff;
-  box-shadow: 0 12px 30px rgba(0, 122, 204, 0.3);
+  box-shadow: 0 15px 40px rgba(0, 118, 255, 0.3);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 15px;
   user-select: none;
   border: 1px solid rgba(255,255,255,0.25);
-  animation: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.price-banner::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(rgba(255,255,255,0.1), transparent);
+  pointer-events: none;
 }
 .add-basket-btn {
   margin-top: 8px;
@@ -1016,18 +1082,29 @@ body.dark .add-basket-btn:disabled {
   flex: 1 1 240px;
   display: flex !important;
   align-items: stretch;
-  background: var(--input-bg);
+  background: rgba(255, 255, 255, 0.6);
   border: 1.5px solid var(--glass-border);
-  border-radius: 12px;
+  border-radius: 16px;
   margin-top: 12px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: visible !important; /* Dropdown ko'rinishi uchun */
-  min-height: 54px;
+  min-height: 56px;
   position: relative; /* Dropdown uchun */
+}
+body.dark .muqova-wrapper {
+  background: rgba(44, 44, 46, 0.5);
+}
+.muqova-wrapper.filled {
+  border-color: var(--primary-color);
+  box-shadow: 0 8px 30px rgba(0, 118, 255, 0.15);
+  background: rgba(255, 255, 255, 0.9);
+}
+body.dark .muqova-wrapper.filled {
+  background: rgba(44, 44, 46, 0.85);
 }
 .muqova-wrapper:hover {
   border-color: var(--primary-color);
-  box-shadow: 0 4px 12px rgba(0,122,204,0.12);
+  box-shadow: 0 8px 25px rgba(0,122,204,0.1);
 }
 .muqova-main-btn {
   flex: 1;
@@ -1046,9 +1123,10 @@ body.dark .add-basket-btn:disabled {
   align-items: center;
   justify-content: center;
   padding: 4px 12px;
-  border-left: 1px solid var(--glass-border);
-  background: rgba(0, 122, 204, 0.08); 
-  min-width: 100px;
+  border-left: none; /* Ajratuvchi chiziq olib tashlandi */
+  background: rgba(0, 118, 255, 0.04); 
+  border-radius: 0 14px 14px 0; /* O'ng burchaklar yumaloq */
+  min-width: 85px;
   align-self: stretch;
   cursor: pointer;
   transition: background 0.2s ease;
@@ -1289,9 +1367,14 @@ body.dark .add-basket-btn:disabled {
 }
 .history-price {
   font-weight: 800;
-  font-size: 15px;
+  font-size: 14.5px;
   color: var(--primary-color);
   white-space: nowrap;
+}
+.history-btns-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
 .restore-history-btn {
@@ -1316,6 +1399,56 @@ body.dark .add-basket-btn:disabled {
   box-shadow: 0 4px 12px rgba(0, 122, 204, 0.25);
 }
 .restore-history-btn:active {
+  transform: scale(0.95);
+}
+
+.add-again-history-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(46, 125, 50, 0.08); /* success light */
+  color: #2e7d32;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0 !important;
+  padding: 0 !important;
+}
+.add-again-history-btn:hover {
+  background: #2e7d32;
+  color: white;
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.25);
+}
+.add-again-history-btn:active {
+  transform: scale(0.95);
+}
+
+.remove-history-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.08); /* danger light */
+  color: #ef4444;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0 !important;
+  padding: 0 !important;
+}
+.remove-history-btn:hover {
+  background: #ef4444;
+  color: white;
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+.remove-history-btn:active {
   transform: scale(0.95);
 }
 
@@ -1357,28 +1490,106 @@ body.dark .add-basket-btn:disabled {
   position: relative;
   z-index: 1;
   background: var(--input-bg);
-  padding: 32px !important;
-  border-radius: 28px !important;
+  padding: 32px;
+  border-radius: 32px;
   animation: fadeInUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  width: 92% !important;
-  max-width: 440px !important; /* Kompyuterda kattaroq va professional */
+  width: 92%;
+  max-width: 420px;
   box-shadow: 0 25px 60px rgba(0,0,0,0.3);
   max-height: 85vh;
   overflow-y: auto;
   border: 1px solid var(--glass-border);
+  display: flex;
+  flex-direction: column;
 }
 .modal-header {
-  font-weight: 800;
-  font-size: 18px;
-  margin-bottom: 20px;
+  font-weight: 900;
+  font-size: 20px;
+  margin-bottom: 24px;
   text-align: center;
   color: var(--primary-color);
+  letter-spacing: -0.5px;
+}
+.modal-footer {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+  width: 100%;
+}
+
+/* Address Detail Styles */
+.address-photo-wrap {
+  width: 100%;
+  border-radius: 18px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  border: 1px solid var(--glass-border);
+}
+.address-photo {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.address-photo:hover { transform: scale(1.05); }
+
+.address-details-card {
+  background: rgba(0, 118, 255, 0.05);
+  border-radius: 18px;
+  padding: 16px;
+  border: 1px solid var(--glass-border);
+  margin-bottom: 20px;
+}
+.address-text, .address-hint {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-color);
+}
+.address-text { margin-bottom: 8px; }
+.address-hint { opacity: 0.85; font-size: 13px; }
+
+.map-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.map-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 14.5px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.map-btn.yandex {
+  background: #ffdb4d;
+  color: #000;
+}
+.map-btn.google {
+  background: #fff;
+  color: #4285F4;
+  border: 1.5px solid #4285F420;
+}
+.map-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+.map-btn:active { transform: scale(0.97); }
+
+body.dark .map-btn.google {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  border-color: rgba(255,255,255,0.1);
 }
 .modal-content button {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  margin-top: 10px;
-  background: var(--primary-color);
+  margin-top: 12px;
+  background: var(--primary-gradient);
   color: white;
   border: none;
   font-weight: 700;
@@ -1450,8 +1661,14 @@ body.dark .add-basket-btn:disabled {
   font-weight: 800;
   font-size: 14px;
   color: var(--primary-color);
-  margin-left: 10px;
   white-space: nowrap;
+}
+.basket-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  margin-right: 15px;
 }
 .remove-basket-item {
   background: rgba(239, 68, 68, 0.1) !important;
@@ -1555,14 +1772,23 @@ body.dark .qty-btn { background: rgba(255,255,255,0.1) !important; }
   transition: all 0.2s ease;
 }
 .clear-basket-btn {
-  background: rgba(239, 68, 68, 0.05) !important;
-  color: #ef4444 !important;
-  border: 1.5px solid rgba(239, 68, 68, 0.1) !important;
+  background: rgba(255, 59, 48, 0.08) !important;
+  color: #ff3b30 !important;
+  border: 1.5px solid rgba(255, 59, 48, 0.2) !important;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(255, 59, 48, 0.1);
 }
 .clear-basket-btn:hover {
-  background: #ef4444 !important;
+  background: #ff3b30 !important;
   color: white !important;
-  border-color: #ef4444 !important;
+  border-color: #ff3b30 !important;
+  box-shadow: 0 8px 25px rgba(255, 59, 48, 0.4) !important;
+  transform: translateY(-2px);
 }
 .close-basket-btn {
   background: rgba(0, 0, 0, 0.05) !important;
@@ -1645,14 +1871,27 @@ footer .brand {
   .muqova-wrapper { 
     flex-direction: row !important; 
     align-items: center !important; 
-    background: var(--input-bg) !important;
+    background: rgba(255, 255, 255, 0.5) !important; /* Glow ko'rinishi uchun */
     border: 1.5px solid var(--glass-border) !important;
     border-radius: 14px !important;
     padding: 0 4px 0 0 !important; 
     justify-content: space-between !important;
     height: 54px !important; 
     margin-top: 14px !important;
+    transition: all 0.3s ease !important;
   }
+  body.dark .muqova-wrapper {
+    background: rgba(44, 44, 46, 0.4) !important;
+  }
+  .muqova-wrapper.filled {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 15px rgba(0, 118, 255, 0.25) !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+  }
+  body.dark .muqova-wrapper.filled {
+    background: rgba(44, 44, 46, 0.7) !important;
+  }
+  /* .muqova-wrapper.filled qoidalari global qismga ko'chirildi */
   .muqova-main-btn {
     background: transparent !important;
     border: none !important;
@@ -1700,19 +1939,19 @@ footer .brand {
   }
 
   .qism-select-area { 
-    border: 1px solid var(--glass-border) !important;
-    border-radius: 10px !important;
-    padding: 4px 10px !important; 
-    width: fit-content !important;
+    border: none !important; /* Border Wrapper'dan olyapti */
+    border-radius: 0 14px 14px 0 !important;
+    padding: 0 12px !important; 
+    width: auto !important;
     margin: 0 !important; 
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
     justify-content: center !important;
     gap: 6px !important;
-    background: rgba(0, 122, 204, 0.04) !important; 
-    height: 36px !important;
-    align-self: center !important; /* Vertikal o'rtaga qulflash */
+    background: rgba(0, 118, 255, 0.04) !important; 
+    height: 100% !important;
+    align-self: stretch !important; 
   }
 
 
@@ -1735,23 +1974,24 @@ footer .brand {
 
   /* --- Yangi Mobil Dizayn --- */
 
-  /* Bottom sheet modallar */
+  /* Floating Card Modallar (Mobile) */
   .modal {
-    align-items: flex-start !important;
-    background: var(--bg-gradient) !important;
-    backdrop-filter: blur(0px) !important;
+    align-items: center !important;
+    background: rgba(0,0,0,0.65) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
   }
   .modal-content {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: 100vh !important;
-    max-height: 100vh !important;
-    border-radius: 0 !important;
-    animation: fadeInModal 0.25s ease-out !important;
-    padding: 24px 16px 100px !important;
+    width: 90% !important;
+    max-width: 400px !important;
+    height: auto !important;
+    max-height: 85vh !important;
+    border-radius: 28px !important;
+    animation: fadeInUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.25) !important;
+    padding: 24px 20px !important;
     margin: 0 !important;
-    box-shadow: none !important;
-    border: none !important;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4) !important;
+    border: 1px solid var(--glass-border) !important;
     display: flex !important;
     flex-direction: column !important;
     overflow-y: auto !important;
@@ -1759,12 +1999,45 @@ footer .brand {
   @keyframes fadeInModal {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
-  }  /* Modallardagi tugmalarni 2-ta ustunga joylash (Grid) - Savat, History va Kabinet dan tashqari */
-  .modal:not(#historyModal):not(#basketModal):not(#phoneModal):not(#cabinetModal) .modal-content {
+  }  /* Modallardagi tugmalarni 2-ta ustunga joylash (Grid) - Ma'lumot beruvchi modallarni istisno qilamiz */
+  .modal:not(#historyModal):not(#basketModal):not(#phoneModal):not(#cabinetModal):not(#helpModal):not(#profileModal):not(#alertModal):not(#confirmModal):not(#addressModal) .modal-content {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px !important;
     align-content: start !important;
+  }
+  
+  /* Ma'lumot beruvchi modallar uchun standard flex layout */
+  #helpModal .modal-content, #profileModal .modal-content, #alertModal .modal-content, #confirmModal .modal-content {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  /* Form va Footer elementlari grid modallarda ham to'liq kenglik bo'lishi kerak */
+  .profile-form, .modal-footer {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+  
+  .modal-footer {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important; /* Tugmalarni bir-birining ostiga qo'yish */
+    gap: 8px !important;
+    margin-top: 15px !important;
+  }
+  
+  .modal-footer button {
+    width: 100% !important; /* Tugmalar to'liq kenglikda */
+    margin: 0 !important;
+  }
+  
+  .profile-form {
+    margin-bottom: 10px;
   }
   /* Header sarlavhasi to'liq uzunlik bo'lishi uchun */
   .modal:not(#historyModal):not(#basketModal):not(#phoneModal):not(#cabinetModal) .modal-header {
@@ -1787,17 +2060,118 @@ footer .brand {
     gap: 10px !important;
   }
   .basket-item {
-    margin-bottom: 10px !important;
-    padding: 14px !important;
+    margin-bottom: 15px !important;
+    padding: 16px 14px !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    position: relative !important;
+  }
+  .basket-item-info {
+    width: 100% !important;
+    padding-right: 35px !important; /* X tugmasi uchun joy */
+  }
+  .basket-item-title {
+    font-size: 15.5px !important;
+    line-height: 1.3 !important;
+  }
+  .basket-item-actions {
+    width: 100% !important;
+    margin: 0 !important;
+    padding-top: 10px !important;
+    border-top: 1px solid var(--glass-border) !important;
+    justify-content: space-between !important;
+  }
+  .remove-basket-item {
+    position: absolute !important;
+    top: 14px !important;
+    right: 12px !important;
+    margin: 0 !important;
+    background: rgba(239, 68, 68, 0.08) !important;
+  }
+  .basket-item-qty-controls {
+    margin-left: 0 !important;
   }
 }
 
-/* Glow Background Animatsiyasi */
+/* Manzil Sahifasi (SPA View) Optimallashtirish */
+#addressView .view-container {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 20px !important;
+  padding: 0 5px !important; /* View-container ichidagi ichki padding */
+}
+
+.address-photo-wrap {
+  width: 100% !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+  box-shadow: var(--shadow-sm);
+  background: #eee;
+  aspect-ratio: 4 / 3;
+}
+
+.address-photo {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+.address-details-card {
+  background: rgba(0, 122, 204, 0.05);
+  padding: 16px !important;
+  border-radius: 18px !important;
+  border: 1px solid rgba(0, 122, 204, 0.1);
+}
+
+.address-text {
+  font-size: 15px !important;
+  margin-bottom: 8px !important;
+}
+
+.address-hint {
+  font-size: 13.5px !important;
+  line-height: 1.5 !important;
+  color: var(--subtext-color);
+}
+
+.map-actions {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+  margin-top: 5px !important;
+}
+
+.map-btn {
+  padding: 14px 10px !important;
+  border-radius: 14px !important;
+  font-size: 13px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  font-weight: 800 !important;
+  text-decoration: none !important;
+  transition: transform 0.2s;
+}
+.map-btn:active { transform: scale(0.96); }
+
+.map-btn.yandex {
+  background: #ffcc00 !important;
+  color: #000 !important;
+}
+.map-btn.google {
+  background: #fff !important;
+  border: 1.5px solid #eee !important;
+  color: #4285F4 !important;
+}
+
+/* Glow Background Animatsiyasi (Dinamik ranglar) */
 .glow-bg {
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  z-index: -2; /* Pastda tursin */
+  z-index: -2;
   overflow: hidden;
   pointer-events: none;
 }
@@ -1805,39 +2179,33 @@ footer .brand {
 .glow-circle {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.5;
-  animation: floatGlow 12s infinite ease-in-out;
+  filter: blur(100px);
+  animation: floatGlow 15s infinite ease-in-out;
 }
 
-/* Light mode uchun ranglar */
 .glow-1 {
-  width: 350px; height: 350px;
-  background: rgba(0, 180, 219, 0.35);
-  top: -80px; right: -80px;
-  animation-duration: 14s;
+  width: 450px; height: 450px;
+  background: var(--glow-1);
+  top: -100px; right: -100px;
+  animation-duration: 18s;
 }
 
 .glow-2 {
-  width: 300px; height: 300px;
-  background: rgba(0, 131, 176, 0.25);
-  bottom: -50px; left: -100px;
-  animation-duration: 18s;
+  width: 400px; height: 400px;
+  background: var(--glow-2);
+  bottom: -80px; left: -120px;
+  animation-duration: 22s;
   animation-delay: -5s;
 }
 
 .glow-3 {
-  width: 250px; height: 250px;
-  background: rgba(234, 46, 122, 0.15); /* Nozik pushti/binafsha glow */
-  top: 40%; left: 30%;
-  animation-duration: 16s;
+  width: 350px; height: 350px;
+  background: var(--glow-3);
+  top: 35%; left: 25%;
+  animation-duration: 20s;
   animation-delay: -3s;
 }
 
-/* Dark Mode uchun nozikroq qilish */
-body.dark .glow-1 { background: rgba(0, 180, 219, 0.15); }
-body.dark .glow-2 { background: rgba(0, 131, 176, 0.1); }
-body.dark .glow-3 { background: rgba(234, 46, 122, 0.08); }
 
 @keyframes floatGlow {
   0%, 100% { transform: translate(0, 0) scale(1); }
@@ -1878,3 +2246,503 @@ body.dark .glow-3 { background: rgba(234, 46, 122, 0.08); }
   to { transform: translateY(0); opacity: 1; }
 }
 
+/* Interaktiv effektlar */
+.pulse-on-select {
+  animation: pulseSelect 0.4s ease-out;
+}
+
+@keyframes pulseSelect {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 118, 255, 0.4); }
+  50% { transform: scale(0.96); box-shadow: 0 0 0 15px rgba(0, 118, 255, 0); }
+  100% { transform: scale(1); }
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #2e7d32, #4caf50) !important;
+  color: white !important;
+  border-color: #2e7d32 !important;
+  box-shadow: 0 4px 15px rgba(46, 125, 50, 0.4) !important;
+}
+
+/* Desktop Layout (Large Screens) */
+@media (min-width: 992px) {
+  body {
+    max-width: 1200px !important;
+    padding-top: 20px !important;
+  }
+  
+  .container {
+    max-width: 1100px !important;
+    padding: 40px !important;
+  }
+
+  .calc-layout {
+    display: grid !important;
+    grid-template-columns: 1.1fr 0.9fr !important;
+    gap: 40px !important;
+    align-items: start !important;
+  }
+
+  .calc-sidebar {
+    position: sticky !important;
+    top: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+  }
+
+  /* Price Banner Vertical for Sidebar */
+  .price-banner {
+    flex-direction: column !important;
+    height: auto !important;
+    padding: 25px !important;
+    text-align: center !important;
+    margin-bottom: 0 !important;
+    min-height: 280px !important;
+    justify-content: center !important;
+    margin-top: 0 !important;
+  }
+
+  .price-banner .left {
+    border-right: none !important;
+    border-bottom: 2px dashed rgba(255,255,255,0.2) !important;
+    padding-right: 0 !important;
+    padding-bottom: 25px !important;
+    margin-bottom: 25px !important;
+    width: 100% !important;
+  }
+
+  .price-banner .title {
+    font-size: 18px !important;
+  }
+
+  .price-banner .value {
+    font-size: 48px !important;
+    margin: 15px 0 !important;
+  }
+
+  .price-right {
+    width: 100% !important;
+    padding-left: 0 !important;
+  }
+
+  .sidebar-add-actions {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+    margin-top: 15px !important;
+  }
+
+  .add-basket-btn {
+    width: 100% !important;
+    padding: 18px !important;
+    font-size: 16px !important;
+  }
+
+  .action-row {
+    margin-top: 0 !important;
+    flex-direction: row !important;
+    gap: 10px !important;
+  }
+
+  .action-btn {
+    flex: 1 !important;
+    padding: 14px 8px !important;
+    font-size: 13px !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+  }
+
+  .history-btn svg {
+    margin-right: 5px !important;
+    width: 18px !important;
+    height: 18px !important;
+  }
+  .history-btn::after {
+    content: "Tarix";
+    font-weight: 700;
+  }
+
+  /* Inputs sizing for desktop */
+  .calc-main .row {
+    gap: 20px !important;
+    margin-top: 20px !important;
+  }
+
+  .calc-main .f-field {
+    margin-bottom: 5px !important;
+  }
+
+  .select-button, .float-input {
+    min-height: 64px !important;
+    font-size: 17px !important;
+  }
+  
+  .float-label {
+    font-size: 16px !important;
+  }
+  
+  .float-btn.filled .float-label, .muqova-wrapper.filled .float-label {
+    font-size: 12px !important;
+  }
+  /* Navbar Desktop Optimization */
+  .navbar {
+    padding: 16px 0 !important;
+    backdrop-filter: blur(40px) !important;
+    -webkit-backdrop-filter: blur(40px) !important;
+    margin-bottom: 35px !important;
+  }
+
+  .nav-container {
+    max-width: 1100px !important;
+    padding: 0 40px !important;
+  }
+
+  .nav-logo {
+    font-size: 28px !important;
+    letter-spacing: 1.5px !important;
+  }
+
+  .nav-basket-btn {
+    padding: 12px 22px !important;
+    font-size: 16px !important;
+    border-radius: 14px !important;
+    gap: 10px !important;
+  }
+
+  .nav-basket-icon {
+    font-size: 20px !important;
+  }
+
+  .menu-trigger {
+    width: 48px !important;
+    height: 48px !important;
+    background: rgba(0, 122, 204, 0.08) !important;
+    border: 1.5px solid rgba(0, 122, 204, 0.15) !important;
+    border-radius: 14px !important;
+    color: var(--primary-color) !important;
+  }
+
+  .bottom-nav {
+    display: none !important;
+  }
+}
+
+.shake-error {
+  animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* Empty State styling */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  opacity: 0.7;
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.action-btn.disabled {
+  opacity: 0.3 !important;
+  pointer-events: none !important;
+  filter: grayscale(1) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Market View Styles */
+.market-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+  gap: 15px;
+  margin-top: 10px;
+}
+.market-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 10px;
+  text-align: center;
+  box-shadow: var(--shadow-sm), var(--inner-glow);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+.market-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md), var(--inner-glow);
+  border-color: var(--primary-color);
+}
+.market-img-wrap {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  background: rgba(0,0,0,0.03);
+  cursor: zoom-in;
+}
+.market-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.market-card:hover .market-img-wrap img {
+  transform: scale(1.08);
+}
+.market-cat {
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: var(--primary-color);
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.market-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex-grow: 1;
+  line-height: 1.3;
+}
+.market-price {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-color);
+  margin-bottom: 12px;
+}
+.btn-add-tomarket {
+  width: 100%;
+  padding: 10px;
+  background: rgba(0, 118, 255, 0.1);
+  color: var(--primary-color);
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-add-tomarket:hover {
+  background: var(--primary-color);
+  color: white;
+}
+.btn-add-tomarket.added {
+  background: #34c759;
+  color: white;
+}
+
+/* Admin Panel Styles */
+.admin-panel-card {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(20px);
+  border: 1.5px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow: var(--shadow-sm), var(--inner-glow);
+}
+body.dark .admin-panel-card {
+  background: rgba(44, 44, 46, 0.35);
+}
+.admin-panel-card h3 {
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+.file-input-style {
+  font-size: 12px;
+  width: 100%;
+  padding: 8px;
+  border: 1px dashed var(--subtext-color);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.admin-products-list h3 {
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+.admin-list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--input-bg);
+  padding: 12px;
+  border-radius: 16px;
+  margin-bottom: 10px;
+  border: 1px solid var(--glass-border);
+}
+.admin-list-item img {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+.admin-list-info {
+  flex: 1;
+}
+.admin-list-title {
+  font-weight: 700;
+  font-size: 14px;
+}
+.admin-list-price {
+  color: var(--primary-color);
+  font-size: 12px;
+  font-weight: 700;
+}
+.admin-list-actions button {
+  background: rgba(0,0,0,0.05);
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-left: 5px;
+  color: var(--text-color);
+}
+.admin-list-actions button.del-btn {
+  color: #ff3b30;
+  background: rgba(255, 59, 48, 0.1);
+}
+
+/* Product Modal specific */
+.product-modal-img-wrap {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  background: #f4f7f9;
+}
+.product-modal-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.product-modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(0,0,0,0.5);
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 14px;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==========================================
+   DESKTOP (PC) RESPONSIVENESS
+========================================== */
+@media screen and (min-width: 900px) {
+  body {
+    max-width: 1000px;
+    padding: 20px 40px;
+  }
+  
+  .nav-container, .container {
+    max-width: 1000px !important;
+  }
+
+  .navbar {
+    border-radius: 20px;
+    margin-top: 10px;
+  }
+  
+  .market-grid {
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 30px;
+  }
+  
+  .market-card {
+    padding: 20px;
+  }
+  .market-img-wrap {
+    margin-bottom: 20px;
+  }
+  .market-title {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+  .market-price {
+    font-size: 19px;
+    margin-bottom: 25px;
+  }
+  .btn-add-tomarket {
+    padding: 14px;
+    font-size: 15px;
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-between;
+    gap: 25px;
+  }
+  
+  .row > div {
+    flex: 1;
+  }
+  
+  .f-field {
+    margin-bottom: 30px;
+  }
+  
+  .select-button {
+    padding: 22px 26px;
+    font-size: 16px;
+  }
+
+  .calc-bottom {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .calc-bottom > button {
+    flex: 1;
+  }
+
+  .admin-list-item {
+    padding: 15px 25px;
+  }
+  
+  .admin-list-title {
+    font-size: 16px;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  body {
+    max-width: 1100px;
+  }
+  .nav-container, .container {
+    max-width: 1100px !important;
+  }
+  .market-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 35px;
+  }
+}
